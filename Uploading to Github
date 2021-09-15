@@ -1,0 +1,23 @@
+//this is from last year just using it for this.
+
+public class QandA {
+		
+		public static void main(String[] args) {
+		
+			System.out.print("What is your full Name?");
+			System.out.print("My name is James Patrick Sabet");
+			System.out.print("Do you have any siblings?")
+			System.out.print("Yes, I have two sisters.")
+			System.out.print("Have you done any coding before')
+			System.out.print("I've taken HTML and JavaScript classes, but its cool to see the differences")
+			System.out.print("do you take any sports?")
+			System.out.print("Yes I play squash competitively and soccer and crew for school")
+		
+			System.out.print("hello");
+			Thread.sleep(1000); // Just to give the user a chance to see "hello".
+			System.out.print("\b\b\b\b\b");
+			System.out.print("world");
+		
+		
+		}
+	}
