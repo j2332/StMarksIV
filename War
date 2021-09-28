@@ -1,0 +1,171 @@
+package Nodes;
+
+import java.util.Scanner;
+
+public class War {
+	private String[] suits = {"Diamonds", "Clubs","Hearts","Spades"};
+	
+	
+	Scanner in = new Scanner(System.in);
+	
+	
+	
+	LinkedList<Card>deck = new LinkedList<Card>();
+	LinkedList<Card>deckp1 = new LinkedList<Card>();
+	LinkedList<Card>deckp2 = new LinkedList<Card>();
+	private boolean game=false;
+	
+	public class Card{
+		
+		int number;
+		String suit;
+		
+		public Card(int n, String s) {
+			this.number = n;
+			this.suit = s; 
+		}
+		
+		
+	}
+	
+	public War() {
+		int count=0;
+		for(int i=0; i< 4; i++) {
+			for(int k=1; k<= 13; k++) {
+				deck.add(new Card(k, suits[count]));
+				
+			}
+			count++;
+			
+		}
+		
+		shuffle();
+		
+		split();
+		
+		run();
+		
+	}
+	
+	
+	
+	public void split() {
+		
+		for(int i=0; i< deck.getSize(); i+=2) {
+			deckp1.add(deck.get(i));
+			deckp2.add(deck.get(i+1));
+		}
+	}
+	
+	public void shuffle() {
+		
+		for (int i = 0; i < deck.getSize(); i++) {
+		    int j = (int)(Math.random() * deck.getSize()); 
+		    
+		    Card temp = deck.get(i);
+		    
+		    deck.add(deck.get(j), i);
+		    deck.add(temp, j);
+		    deck.remove(i+1);
+		    
+		    
+		    deck.remove(j);
+		    
+		}
+		
+		
+		
+	}
+	
+	
+	
+	public void run() {
+		while(game==false) {
+			
+			if(in.nextLine().equals("") ){
+				play();
+				
+			}
+		}
+		
+	}
+		
+		
+	public void play() {
+		
+		
+		
+		
+		Card one = deckp1.remove(0);
+		Card two = deckp2.remove(0);
+			
+			System.out.println("Player 1 plays the " + one.number + one.suit + "." );
+			System.out.println("Player 2 plays the " + two.number + two.suit + ".");
+			
+			
+			if(one.number>two.number) {
+				System.out.println("Player 1 wins the round!");
+				System.out.println("Player 1 has " + deckp1.getSize() + " cards.");
+				System.out.println("Player 2 has " + deckp2.getSize() + " cards.");
+				
+				deckp1.add(one);
+				deckp1.add(two);
+				
+				if(deckp1.getSize() ==0) {
+					System.out.println("Player 2 wins!");
+					game=true;
+				}
+				if(deckp2.getSize() ==0) {
+					System.out.println("Player 1 wins!");
+					game=true;
+				}
+			}else if(two.number>one.number) {
+				System.out.println("Player 2 wins the round!");
+				System.out.println("Player 1 has " + deckp1.getSize() + " cards.");
+				System.out.println("Player 2 has " + deckp2.getSize() + " cards.");
+
+				deckp2.add(one);
+				deckp2.add(two);
+				
+				if(deckp1.getSize() ==0) {
+					System.out.println("Player 2 wins!");
+					game=true;
+				}
+				if(deckp2.getSize() ==0) {
+					System.out.println("Player 1 wins!");
+					game=true;
+				}
+			}else if(two.number == one.number) {
+				System.out.println("It's a tie!");
+				System.out.println("Player 1 has " + deckp1.getSize() + " cards.");
+				System.out.println("Player 2 has " + deckp2.getSize() + " cards.");
+			
+				deckp2.add(two);
+				deckp1.add(one);
+				
+				if(deckp1.getSize() ==0) {
+					System.out.println("Player 2 wins!");
+					game=true;
+				}
+				if(deckp2.getSize() ==0) {
+					System.out.println("Player 1 wins!");
+					game=true;
+				}
+				
+			}
+			
+			
+		
+	}
+	
+		
+
+	
+
+	
+	
+	public static void main(String[]args) {
+		
+		new War();
+	}
+}
