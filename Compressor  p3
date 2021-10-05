@@ -1,0 +1,93 @@
+package Projects;
+
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+
+
+public class Compressor {
+
+	HashMap <Character, Integer> map = new HashMap();
+	
+	public Compressor() throws IOException {
+		readfile();
+		pq();
+	}
+	
+	
+	
+	public void readfile() throws IOException {
+
+		
+		FileReader in = new FileReader("EnglishToArabicDictionary.txt");
+		
+		//Reads through the file and stops at -1 
+		for(int line = in.read(); line !=-1; line = in.read()) {
+		
+			//checks if the char is already in the map, if it isn't add it with a freq of one
+			//if it is then just add one to the total
+			
+			if(map.get(line) ==null) {
+				map.put((char)line, 1);
+			}else {
+				map.put((char)line, map.get(line)+1);
+			}
+			
+			
+			
+		}
+		
+		System.out.println(map);
+		//read file 
+		//store in map char --> int
+		
+	}
+	
+	public void createBranch() {
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public void pq() {
+		
+		PQ p = new PQ();
+		for (Character key : map.keySet()) {
+			p.add(key, map.get(key));
+		}
+		
+		
+		
+		System.out.println(p);
+		
+		
+	}
+	
+	
+	
+	public static void main(String[]args) throws IOException {
+		//Create a Pritority Queue when added sorted by freq
+		
+		//Methods: add, pop, to string
+		
+		
+		//create binary tree to determine the codes for the characters
+		
+		
+		new Compressor();
+		
+	}
+	
+	
+}
