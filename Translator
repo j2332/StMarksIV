@@ -8,23 +8,22 @@ import java.util.Scanner;
 
 public class Translator {
 
-	HashMap<String, String>myMap = new HashMap<String, String>();
+	HashMap<String, String>myMap = new HashMap<>();
 	public Translator() throws IOException {
 		
 		BufferedReader in;
-		int count=0;
-		String line1 = null;
+
 		in = new BufferedReader(new FileReader("EnglishToArabicDictionary.txt"));
 		
-		for(String line = in.readLine(); line !=null; line = in.readLine()) {
-			if(count%2==0) {
-				myMap.put(line1, line);
-				count++;
-			}else {
-				line1=line;
-				count++;
-			}
+		in.readLine();
+		
+		String line, line1;
+		while((line = in.readLine()) != null) {
+			line1 = in.readLine();
+
+            myMap.put(line, line1);
 		}
+		
 		find();
 		
 	}
@@ -39,7 +38,6 @@ public class Translator {
 				break;
 
 			}else {
-				System.out.println(answer);
 				System.out.println(myMap.get(answer));
 			}
 		}
