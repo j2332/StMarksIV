@@ -1,0 +1,57 @@
+package Projects;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
+public class PQ<E> {
+
+	ArrayList<Node> list = new ArrayList<Node>();
+	
+	public class Node{
+		
+		int prior; 
+		E info;
+		
+		public Node(E info, int prior) {
+			this.info =info;
+			this.prior=prior;
+		}
+		
+		public int getPrior() {
+			return prior;
+		}
+		
+		
+	}
+	
+	public void add(E e, int prior) {
+		list.add(new Node(e, prior));
+		list.sort(Comparator.comparingInt(Node::getPrior));
+		
+		
+	}
+	
+	public E pop() {
+		return list.remove(0).info;
+	}
+	
+	public String toString() {
+		String yo="";
+		for(Node n: list) {
+			yo+= "(" + n.info.toString() + ")";
+		}
+		
+		return yo;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
