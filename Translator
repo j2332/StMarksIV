@@ -1,0 +1,57 @@
+package Projects;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Scanner;
+
+public class Translator {
+
+	HashMap<String, String>myMap = new HashMap<String, String>();
+	public Translator() throws IOException {
+		
+		BufferedReader in;
+		int count=0;
+		String line1 = null;
+		in = new BufferedReader(new FileReader("EnglishToArabicDictionary.txt"));
+		
+		for(String line = in.readLine(); line !=null; line = in.readLine()) {
+			if(count%2==0) {
+				myMap.put(line1, line);
+				count++;
+			}else {
+				line1=line;
+				count++;
+			}
+		}
+		find();
+		
+	}
+	
+	public void find() {
+		Scanner input = new Scanner(System.in);
+		
+		boolean who=true;
+		while(who) {
+			String answer = input.next();
+			if(answer.equals(",")) {
+				break;
+
+			}else {
+				System.out.println(answer);
+				System.out.println(myMap.get(answer));
+			}
+		}
+	
+	
+	
+	}
+	public static void main(String[]args) throws IOException {
+		
+		new Translator();
+		
+		
+		
+	}
+}
