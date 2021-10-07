@@ -6,14 +6,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
+import Projects.Branch;
+
 
 public class Compressor {
 
 	HashMap <Character, Integer> map = new HashMap();
+	HashMap <Character, String> mapTREE = new HashMap();
+	PQ<Branch<Character>> p = new PQ<Branch<Character>>();
 	
 	public Compressor() throws IOException {
 		readfile();
 		pq();
+		traverse();
+		System.out.println(mapTREE);
 	}
 	
 	
@@ -29,10 +35,12 @@ public class Compressor {
 			//checks if the char is already in the map, if it isn't add it with a freq of one
 			//if it is then just add one to the total
 			
-			if(map.get(line) ==null) {
+			char letter = (char)line;
+			
+			if(map.get((char)line) ==null) {
 				map.put((char)line, 1);
 			}else {
-				map.put((char)line, map.get(line)+1);
+				map.put((char)line, map.get(letter)+1);
 			}
 			
 			
@@ -45,31 +53,53 @@ public class Compressor {
 		
 	}
 	
-	public void createBranch() {
+	public void pq() {
+		
+		
+		for (Character key : map.keySet()) {
+			p.add(new Branch<Character>(key), map.get(key));
+		}
+		
+		
+		while(p.size()>1) {
+			int a = p.getFirstPrior();
+			Branch<Character> a1=p.pop();
+			
+			int b = p.getFirstPrior();
+			Branch<Character> b1=p.pop();
+			
+			p.add(new Branch<Character>(a1, b1), a+b);
+		}
+		
+			
+			
+		
+		
+		
+	
 		
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	public void pq() {
+	public void traverse() {
+		genCode("", p.pop());
 		
-		PQ p = new PQ();
-		for (Character key : map.keySet()) {
-			p.add(key, map.get(key));
+	}
+	public void genCode(String code, Branch<Character> curr) {
+		
+		
+		if(curr.isLeaf) {
+			mapTREE.put(curr.getData(), code);
+		}else {
+			genCode(code + "0" , curr.left);
+			genCode(code + "1" , curr.right);
 		}
 		
 		
 		
-		System.out.println(p);
+		
+		
+		
+		
 		
 		
 	}
