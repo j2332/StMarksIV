@@ -1,0 +1,166 @@
+package Projects;
+
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+
+import Projects.Branch;
+import Projects.BufferedBitWriter;
+
+public class Compressor {
+
+	HashMap <Character, Integer> map = new HashMap();
+	HashMap <Character, String> mapTREE = new HashMap();
+	
+	PQ<Branch<Character>> p = new PQ<Branch<Character>>();
+	
+	String filename="MatthewBarber.txt";
+	
+	
+	
+	public Compressor() throws IOException {
+		readfile();
+		pq();
+		traverse();
+		encode();
+		
+		
+	}
+	
+	
+	
+	public void readfile() throws IOException {
+
+		FileReader in = new FileReader(filename);
+		
+		
+		//Reads through the file and stops at -1 
+		for(int line = in.read(); line !=-1; line = in.read()) {
+		
+			//checks if the char is already in the map
+			//if it isn't add it with a freq of one
+			
+			char letter = (char)line;
+			
+			if(map.get(letter) ==null) {
+				map.put(letter, 1);
+			}else {
+				map.put(letter, map.get(letter)+1);
+			}
+			
+			
+			
+		}
+		
+	
+		
+		
+	}
+	
+	public void pq() {
+		
+		//creates a pq filled with branches made from the freq map
+		//and sorts based on freq
+		for (Character key : map.keySet()) {
+			p.add(new Branch<Character>(key), map.get(key));
+		}
+		
+		//combines the branches with the lowest freq and then readding them 
+		//back into the map
+		while(p.size()>1) {
+			int a = p.getFirstPrior();
+			Branch<Character> a1=p.pop();
+			
+			int b = p.getFirstPrior();
+			Branch<Character> b1=p.pop();
+			
+			p.add(new Branch<Character>(a1, b1), a+b);
+		}
+		
+		
+	}
+	public void traverse() {
+		//just starts genCode, useless, but I kept it
+		genCode("", p.pop());
+		
+	}
+	public void genCode(String code, Branch<Character> curr) {
+		//Starting from the top of the tree it generates the binary
+		//code for each of the char
+		
+		if(curr.isLeaf) {
+			mapTREE.put(curr.getData(), code);
+		}else {
+			genCode(code + "0" , curr.left);
+			genCode(code + "1" , curr.right);
+		}
+		
+		
+		
+	}
+	
+	public void encode() throws IOException {
+		
+		FileReader in = new FileReader(filename);
+		BufferedBitWriter bbw = new BufferedBitWriter(filename + "Compressed");
+		String temp;
+		//goes through the file and stores the current char
+		for(int line = in.read(); line !=-1; line = in.read()) {
+			char letter = (char)line;
+			
+			temp=mapTREE.get(letter);
+			//here it turns the binary into bits 
+			for(int i=0; i<temp.length(); i++) {
+				if(temp.charAt(i)=='0') {
+					bbw.writeBit(false);
+				}else {
+					bbw.writeBit(true);
+				}
+			}
+			
+		}
+		bbw.close();
+		in.close();
+		
+		//this creates a file with the binary to char codes
+		BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filename+"CodeMap")));
+		for(Character c : mapTREE.keySet()) {
+			bw.write(mapTREE.get(c));
+			bw.newLine();
+			bw.write(c);
+			bw.newLine();
+			
+		}
+		bw.close();
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public static void main(String[]args) throws IOException {
+		//Create a PQ when added sorted by freq
+		
+		//Methods: add, pop, to string
+		
+		
+		//create binary tree to determine the codes for the characters
+		
+		//make sure the name of the file changes when you 
+		
+		new Compressor();
+		
+	}
+	
+	
+}
