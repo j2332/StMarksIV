@@ -1,0 +1,26 @@
+package Projects;
+
+
+
+	public class Branch<E>{
+		E info;
+		Branch right, left;
+		Boolean isLeaf;
+		
+		public Branch(E info) {
+			this.info =info;
+			isLeaf=true;
+		}
+		public Branch(Branch right, Branch left) {
+			this.right =right;
+			this.left =left;
+			isLeaf=false;
+		}
+		
+		public E getData() {
+			return info;
+		}
+	}
+	
+
+	
