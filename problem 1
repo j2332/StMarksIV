@@ -1,0 +1,53 @@
+public void problem1(int[][]arr, int [][]arr2) {
+		int [][]arr3=new int[arr.length][arr.length+1];
+		int total=0;
+		
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr[i].length; j++ ) {
+
+				arr3[i][j]=arr[i][j]+arr2[i][j];
+								
+			}	
+		}
+		
+		for (int i = 0; i < arr3.length; i++) {
+			if (equalzero(arr3[i])) {
+                total++;
+            }
+
+        }
+		
+		arr3 = flipit(arr3);
+		
+		for (int i = 0; i < arr3.length; i++) {
+            if (equalzero(arr3[i])) {
+                total++;
+            }
+        }
+		
+		System.out.println(total);
+	}
+	
+	public int[][] flipit(int[][] arr) {
+   
+        int[][] arr2 = new int[arr[0].length][arr.length];
+        
+        for (int i = 0; i < arr.length; i++) {
+        	for (int j = 0; j < arr[0].length; j++) {
+        		arr2[j][i] = arr[i][j];
+        	}     
+        }
+            
+        return arr2;
+    }
+	
+	public boolean equalzero(int[] array) {
+        for(int i = 1; i < array.length; i++) {
+            int a = array[0];
+            if (a != 0) {
+            	 return false;
+            }
+               
+        }
+        return true;
+    }
