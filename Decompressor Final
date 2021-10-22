@@ -1,0 +1,92 @@
+package Projects;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+
+public class Decompressor {
+	
+	String filename="MatthewBarber.txt";
+	HashMap <String, Character> TREEmap = new HashMap();
+	
+	public Decompressor() throws IOException {
+		buildMap();
+		decode();
+		
+		
+	}
+	
+	
+	public void buildMap() throws IOException {
+		FileReader in2 = new FileReader(filename+"CodeMap");
+		
+		String temp="";
+		char c;
+		//for loop that goes throughout the entire file
+		for(int letter = in2.read(); letter !=-1; letter = in2.read()) {
+			c =  (char)letter;
+			//builds up the binary string in each line
+			if(c != '\n') {
+				temp+=c;
+			}else {
+				//adds it to the map of binary -->char
+				//and makes sure to skip to the next line
+				TREEmap.put(temp, (char)in2.read());
+				temp="";
+				in2.read();
+			}
+			
+			
+		}
+		
+	}
+	
+	public void decode() throws IOException {
+		BufferedBitReader bbr = new BufferedBitReader(filename + "Compressed");
+		FileWriter bw = new FileWriter(new File(filename+"Decompressed"));
+		
+
+		
+		//converts bits to--->char 
+		
+		String temp="";
+		//using BufferedBitReader checks if there is another bit 
+		while(bbr.hasNext()) {
+			//using BUfferedBitReader again checks if the bit is true or false aka 1 or 0
+			if(bbr.readBit()) {
+				temp+="1";
+			}else {
+				temp+="0";
+			}
+			
+			if(TREEmap.get(temp)!=null) {
+				
+				bw.write(TREEmap.get(temp));
+				temp="";
+			}
+			
+			
+		}
+		bw.close();
+		bbr.close();
+		
+		
+	}
+	
+	public static void main(String[]args) throws IOException {
+		//Create a PQ when added sorted by freq
+		
+		//Methods: add, pop, to string
+		
+		
+		//create binary tree to determine the codes for the characters
+		
+		//make sure the name of the file changes when you 
+		
+		new Decompressor();
+		
+	}
+
+}
