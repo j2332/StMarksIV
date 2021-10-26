@@ -1,0 +1,111 @@
+package Hopefully;
+
+import java.util.Arrays;
+
+public class challengeProblems {
+
+	public void problem1(int[][]arr, int [][]arr2) {
+		int [][]arr3=new int[arr.length][arr.length+1];
+		int total=0;
+		
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr[i].length; j++ ) {
+
+				arr3[i][j]=arr[i][j]+arr2[i][j];
+								
+			}	
+		}
+		
+		int horSum=0;
+		for(int i=0; i<arr.length; i++) {
+			for(int j=0; j<arr[0].length; j++) {
+				horSum += arr[i][j]+arr2[i][j];
+			}
+
+			if(horSum == 0) {
+				total++;
+			}
+			horSum=0;
+		}
+		
+		int verSum=0;
+		for(int i=0; i<arr[0].length; i++) {
+			for(int j=0; j<arr.length; j++) {
+				verSum += arr[j][i]+arr2[j][i];
+			}
+
+			if(verSum == 0) {
+				total++;
+			}
+			verSum=0;
+		}
+		
+		
+		
+
+		
+		System.out.println(total);
+	}
+	
+
+	public int contagious(boolean[]b) {
+	
+		int front = 0;
+		int longest = 0;
+		int temp_len = 0;
+		boolean first = true;
+		for(boolean bol: b) {
+			
+			if(bol && first) {
+				front++;
+			}
+			else {
+				first = false;
+			}
+
+			
+			if(bol) {
+				temp_len++;
+			}
+			else {
+				if(temp_len > longest) {
+					longest = temp_len;
+				}
+				temp_len = 0;
+			}
+		}
+		int end = 0;
+		for(int i = b.length-1; i >= 0; i--) {
+			if(b[i]) {
+				end++;
+			}
+			else {
+				break;
+			}
+		}
+		
+		if(end == b.length) {
+			return -1;
+		}
+		
+		else {
+			return Math.max(Math.max(front, temp_len/2+1), end);
+		}
+	}
+	
+	
+	public static void main(String[] args) {
+		challengeProblems run = new challengeProblems();
+		
+
+		int [][]arr= {{5, 3, -1},{-2,4,0},{2,-4,0}, {2,-4,0}, {2,-4,0}, {2,-4,0}, {2,-4,0}, {2,-4,0}, {5, 3, -1}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1} };
+
+        int [][]arr2= {{3, -3, 6},{2, -4, 0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {3, -3, 6}, {3, -3, 6}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1}, {5, 3, -1},{-2,4,0},{-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {-2,4,0}, {5, 3, -1}};
+//		int [][]arr={{5, 3, -1},{-2,4,0}};
+//		int [][]arr2={{3, -3, 6},{2, -4, 0}};
+        boolean []b = {true, true, false, true, false, false, true, true, true, true};
+        System.out.println(run.contagious(b));
+
+	}
+
+}
