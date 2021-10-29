@@ -1,0 +1,79 @@
+package Graphics;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class G {
+	public final int Height=1000, Width=1000;
+	
+	public G() {
+		JFrame window = new JFrame(); 
+		window.setSize(Width, Height);
+		//you can mess around with this
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//where on the screen it comes up 
+		window.setLocationRelativeTo(null);
+		
+		
+		JPanel container = new JPanel();
+		
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				
+				g.setColor(new Color(40, 255, 30));
+				g.fillRect(0, 0, G.this.Width, G.this.Height);
+			}
+		};
+		
+		canvas.setPreferredSize(new Dimension(Width, Height/2));
+		
+		JPanel canvas1 = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				
+				
+			//	g.fillRect(0, 0, G.this.Width, G.this.Height);
+				g.setColor(new Color(255, 60, 120));
+			// use desmos.com to graph out rubix cube 
+				g.drawLine(G.this.Width/2, G.this.Height/2, G.this.Width/2, G.this.Height/2+200);
+				g.drawLine(G.this.Width/2, G.this.Height/2,G.this.Width/2-240,  (int) (G.this.Height/2-132.4));
+				g.drawLine(G.this.Width/2, G.this.Height/2, G.this.Width/2+240, (int)(G.this.Height/2-132.4));
+				g.drawLine(G.this.Width/2+240, (int)(G.this.Height/2-132.4), G.this.Width/2, G.this.Height/2-220);
+				g.drawLine(G.this.Width/2-240,  (int) (G.this.Height/2-132.4), G.this.Width/2, G.this.Height/2-220);
+				g.drawLine(G.this.Width/2, G.this.Height/2+200, G.this.Width/2+220, G.this.Height/2+120);
+				g.drawLine(G.this.Width/2+240, (int)(G.this.Height/2-132.4), G.this.Width/2+220, G.this.Height/2+120);
+				g.drawLine(G.this.Width/2, G.this.Height/2+200, G.this.Width/2-220, G.this.Height/2+120);
+				g.drawLine(G.this.Width/2-220, G.this.Height/2+120,G.this.Width/2-240,  (int) (G.this.Height/2-132.4));
+				g.drawLine(G.this.Width/2-120, (int)(G.this.Height/2-66.2), G.this.Width/2+120,  (int) (G.this.Height/2-176.2));
+				g.drawLine(G.this.Width/2+120, (int)(G.this.Height/2-66.2), G.this.Width/2-120,  (int) (G.this.Height/2-176.2));
+				g.drawLine(G.this.Width/2-120, (int)(G.this.Height/2-66.2), G.this.Width/2-110,  (int) (G.this.Height/2+160));
+				
+				g.drawLine(G.this.Width/2, (int)(G.this.Height/2+100), G.this.Width/2-230,  (int) (G.this.Height/2+6.2));
+				g.drawLine(G.this.Width/2, (int)(G.this.Height/2+100), G.this.Width/2+230,  (int) (G.this.Height/2+6.2));
+				
+				g.drawLine(G.this.Width/2+120, (int)(G.this.Height/2-66.2), G.this.Width/2+110,  (int) (G.this.Height/2+160));
+				
+				
+			}
+		};
+		
+		
+		//container.add(canvas1);
+		
+		
+		window.add(canvas1);
+		
+		window.setVisible(true);
+	}
+	
+	public static void main(String[] args) {
+		new G();
+	}
+
+}
