@@ -1,0 +1,177 @@
+package GraphicsIntro;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+public class Robot {
+	
+	public final int Height=1000, Width=1000, robotsize=100;
+	private int x=Width/2, y=Height/2, mousex, mousey, speed=5;
+	private boolean left, right, up, down, mouse;
+	
+	JFrame window = new JFrame(); 
+	
+	public Robot() {
+		window.setSize(Width, Height);
+		//you can mess around with this
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//where on the screen it comes up 
+		window.setLocationRelativeTo(null);
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				
+				g.setColor(new Color(40, 255, 30));
+				g.fillRect(x, y, robotsize, robotsize);
+				
+			}
+		};
+		
+		
+		window.add(canvas);
+		
+		window.setVisible(true);
+		canvas.requestFocus();
+		
+		
+		canvas.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			
+			}	
+				
+			
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode()==KeyEvent.VK_UP) {
+					up=true;
+					
+				}
+				if(e.getKeyCode()==KeyEvent.VK_LEFT) {
+					left=true;
+					
+				}
+				if(e.getKeyCode()==KeyEvent.VK_DOWN) {
+					down=true;
+					
+				}
+				if(e.getKeyCode()==KeyEvent.VK_RIGHT) {
+					right=true;
+					
+				}
+			}
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getKeyCode()==KeyEvent.VK_UP) {
+					up=false;
+				}
+				if(e.getKeyCode()==KeyEvent.VK_LEFT) {
+					
+					left=false;
+				}
+				if(e.getKeyCode()==KeyEvent.VK_DOWN) {
+					
+					down=false;
+				}
+				if(e.getKeyCode()==KeyEvent.VK_RIGHT) {
+					
+					right=false;
+				}
+			}
+			
+		});
+		
+		window.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				mouse = true;
+				mousex = e.getX()-robotsize/2;
+				mousey = e.getY()-robotsize/2;
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				mouse = false;
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+		});
+		
+		run();
+		
+		
+	}
+	public void move() {
+		if(mouse) {
+			x= mousex;
+			y= mousey;
+		}
+		
+		if(up) 
+			y -= speed;
+		if(down) 
+			y += speed;
+		if(right) 
+			x += speed;
+		if(left) 
+			x -= speed;
+		
+		
+		
+	}
+	
+	public void run() {
+		while(true) {
+			window.getContentPane().repaint();
+
+			move();
+			try {
+				Thread.sleep(10);
+			} catch (Exception ex) {}
+		}
+	}
+	
+	public void paint(Graphics g) {
+		
+		
+		g.setColor(new Color(40, 255, 30));
+		g.fillRect(x, y, robotsize, robotsize);
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new Robot();
+	}
+
+}
