@@ -1,0 +1,136 @@
+package GraphicsIntro;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+
+public class ChatBot2 {
+	private final int width = 600, height = 600;
+
+	
+	private String log = "\n";
+	private String start = "Hello there I'm chat bot please talk to me: ";
+	
+	private ArrayList<String> list = new ArrayList<String>();
+
+	
+	public ChatBot2() {
+		
+		JTextArea input = new JTextArea();
+		input.setEditable(true);
+		input.setPreferredSize(new Dimension (width, height/2));
+		
+		JPanel container = new JPanel();
+		
+		
+		
+		JTextArea output = new JTextArea();
+		output.setEditable(false);
+		output.setText(log);
+
+		
+		
+		JPanel canvas = new JPanel();
+		BoxLayout boxlayout = new BoxLayout(canvas, BoxLayout.Y_AXIS);
+		
+		canvas.setLayout(boxlayout);
+		canvas.setBorder(BorderFactory.createTitledBorder("Chat Bot 2"));
+		canvas.add(input);
+		canvas.add(output);
+		
+		
+		
+		
+		
+		JScrollPane scroll = new JScrollPane (output);
+		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroll.setPreferredSize(new Dimension (width, height/2));
+		canvas.add(scroll);
+		
+	
+	
+		log += start + "\n";
+		list.add("Hi");
+		list.add("Wow");
+		list.add("Cool");
+		list.add("What?");
+		list.add("Very good!");
+		list.add("Stop");
+		list.add("uhhh...");
+		
+		
+		
+		
+		JButton button = new JButton("Send");
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				String text = input.getText().replaceAll("\n", "");
+				log += "You: "+text+"\n";
+				
+				log += "Little Child: "+list.get((int) (Math.random()*list.size()));
+				
+				log+= "\n";
+				output.setText(log);
+				input.setText("");
+			}
+		});
+		
+		
+		
+		container.setLayout(new BorderLayout(150,50));
+		container.add(canvas,BorderLayout.PAGE_START);
+		container.add(button,BorderLayout.PAGE_END);
+		
+		
+		input.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					button.doClick();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+			
+		});
+		JFrame window = new JFrame();
+		
+		window.setSize(width, height+75);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.add(container);
+		
+		window.setLocationRelativeTo(null);
+		window.setVisible(true);
+		container.setFocusable(true);
+		
+		
+	}
+
+
+	public static void main(String[] args) {
+		new ChatBot2();
+	}
+}
