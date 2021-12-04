@@ -1,0 +1,622 @@
+package GraphicsIntro;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
+
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+public class GraphicsEditor {
+	
+	private final int height=1200, width=1200;
+	private int mousex, mousey;
+	private boolean rectangle=true, line, circle, mouse, 
+					delete, colorselect, resize, cretext, move, front, back, pen,movee;
+	//These are all my button booleans, they just tell me which button is active, yes I could've made a array of them
+	//making it easier to set all to false, but I didn't
+	
+	public int endx, endy, move1, move2, shapee;
+	//Here are just some variables I needed for move and resize just to store info in 
+	public Color color= Color.GREEN;
+	
+	public ArrayList<Shape> list = new ArrayList<Shape>();
+	//just my list of shapes that is on the canvas
+	
+	private int x1, y1;
+	//Just some more variables I needed for move and resize
+	public ArrayList<ArrayList<Shape>> list2 = new ArrayList<ArrayList<Shape>>();
+	//my list of lists of shapes which i use for undo 
+	
+	JFrame window = new JFrame(); 
+	
+	public GraphicsEditor() {
+		
+		//Here I create the frame just the basic thing
+		window.setSize(width, height);
+		
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		window.setLocationRelativeTo(null);
+		
+		
+		
+		//ISSUE #1 509
+		//ISSUE #2 614
+		
+		
+		
+		JPanel container = new JPanel() {};
+		BoxLayout boxlayout = new BoxLayout(container, BoxLayout.Y_AXIS);
+		container.setLayout(boxlayout);
+		
+		//Here I create a container that has 3 different headings
+		JPanel heading1 = new JPanel() {};
+		JPanel heading2 = new JPanel() {};
+		JPanel heading3 = new JPanel() {};
+		//I use these just to spread the sepereate buttons out and then add them to the container 
+		
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				
+				g.setColor(Color.WHITE);
+				g.fillRect(0, 0, width, height);
+				//just a for loop through my list that draws all the shapes 
+				for(int i=0; i<list.size(); i++) {
+					list.get(i).draw(g);
+					
+				}
+				
+			}
+		};
+		
+		canvas.setPreferredSize(new Dimension(width, height-100));
+		
+		//HEADING 1
+		JButton buttonrect = new JButton("Rectangle");
+		buttonrect.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				line=false;
+				circle=false;
+				rectangle=true;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=false;
+				back=false;
+				pen=false;
+				
+			}
+		});
+		JButton buttoncirc = new JButton("Circle");
+		buttoncirc.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=true;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=false;
+				back=false;
+				pen=false;
+				
+			}
+		});
+		JButton buttonline = new JButton("Line");
+		buttonline.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=true; 
+				circle=false;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=false;
+				back=false;
+				pen=false;
+			}
+		});
+		
+		
+		
+		
+		
+		//HEADING 2
+		JButton chooseColor = new JButton("Choose Color");
+		chooseColor.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Here this button uses the imported color chooser and doesn't have a boolean statement
+				
+				JColorChooser cc = new JColorChooser();
+				color = cc.showDialog(null, "Pick a Color ", color);
+			}
+		});
+		JButton createText = new JButton("Text");
+		createText.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=false;
+				delete=false;
+				colorselect=false;
+				cretext=true;
+				move=false;
+				front=false;
+				back=false;
+				pen=false;
+			}
+		});
+		
+		//These are the two textAreas for my text
+		//1 for the size 1 for the content
+		//the labels are non editable and the space is clearly 
+		JTextArea textSize = new JTextArea();
+		textSize.setEditable(false);
+		textSize.setText("TextSize:");
+		textSize.setBackground(null);
+		
+		
+		JTextArea textSize2 = new JTextArea();
+		textSize2.setEditable(true);
+		textSize2.setText("50");
+		
+		
+		
+		JTextArea textContent = new JTextArea();
+		textContent.setEditable(false);
+		textContent.setText("TextContent:");
+		textContent.setBackground(null);
+		
+		
+		JTextArea textContent2 = new JTextArea();
+		textContent2.setEditable(true);
+		textContent2.setText("Hello World");
+		
+		
+		
+		
+		
+		
+		
+		//HEADING 3
+		JButton buttonDel = new JButton("Delete");
+		buttonDel.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=false;
+				delete=true;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=false;
+				back=false;
+				pen=false;
+			}
+		});
+		
+		JButton moves = new JButton("Move");
+		moves.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=false;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=true;
+				front=false;
+				back=false;
+				pen=false;
+			}
+		});
+		
+		JButton ButtonFront = new JButton("Front");
+		ButtonFront.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=false;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=true;
+				back=false;
+				pen=false;
+			}
+		});
+		
+		JButton ButtonBack = new JButton("Back");
+		ButtonBack.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				rectangle=false;
+				line=false;
+				circle=false;
+				delete=false;
+				colorselect=false;
+				cretext=false;
+				move=false;
+				front=false;
+				back=true;
+				pen=false;
+				
+			}
+		});
+		
+		
+		
+		JButton ButtonUndo = new JButton("Undo");
+		ButtonUndo.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//so this first checks the edge case that undos the only thing on the list and in that case
+				//it just erases everything
+				
+				if(list2.size()>1) {
+					list = list2.get(list2.size()-2);
+					
+					if(list2.size() >0) {
+						list2.remove(list2.size()-1);
+					}
+				}else {
+					list2 = new ArrayList<ArrayList<Shape>>();
+					list = new ArrayList<Shape>();
+				}
+				
+				
+				
+				
+				
+			}
+			
+		});
+		
+		JButton ButtonRest = new JButton("Rest");
+		ButtonRest.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//pretty simple just clears the canvas 
+				
+				
+				list.clear();	
+			}
+			
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		//This is just the info for line 
+		//Creating two text Areas one editable, one not 
+		
+		JTextArea Linewidth1 = new JTextArea();
+		Linewidth1.setEditable(false);
+		Linewidth1.setText("Line Width:");
+		Linewidth1.setBackground(null);
+		
+		
+		JTextArea Linewidth2 = new JTextArea();
+		Linewidth2.setEditable(true);
+		Linewidth2.setText("50");
+
+		//here I add all the different buttons into their 
+		//seperate headings 
+		
+		heading1.add(buttonrect);
+		heading1.add(buttoncirc);
+		heading1.add(buttonline);
+		heading1.add(Linewidth1);
+		heading1.add(Linewidth2);
+		
+		
+		
+		heading2.add(chooseColor);
+		heading2.add(createText);
+		heading2.add(textSize);
+		heading2.add(textSize2);
+		heading2.add(textContent);
+		heading2.add(textContent2);
+		
+		
+		
+		
+		heading3.add(buttonDel);
+		heading3.add(moves);
+		heading3.add(ButtonFront);
+		heading3.add(ButtonBack);
+		heading3.add(ButtonRest);
+		heading3.add(ButtonUndo);
+		
+		
+		
+		//then add the headings and the canvas to the container
+		container.add(heading1);
+		container.add(heading2);
+		container.add(heading3);
+		container.add(canvas);
+		
+		//finally adding the container to the window 
+		window.add(container);
+		
+		
+		
+		canvas.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {				
+
+
+				if(rectangle) {
+					//so it sets x1 and y1 of the current mouse spots and then creates a rectangle of 0,0 
+					//at my mouse so then I can resize it later 
+					//the variables are for knowing where the original starting point was
+					x1 = e.getX();
+					y1 = e.getY();
+					
+					
+					list.add(new Rectangle(e.getX(), e.getY(), 0, 0, color));
+					
+					
+					//here I turn resize on just so it will start to drag to set the rectangle to prefered size
+					resize=true;
+					
+				}
+				if(line) {
+					//Pretty simple so I create a new line at my mouse
+					//and grabing the info from my textareas from earlier 
+					
+					list.add(new Line(e.getX(), e.getY(), Integer.parseInt(Linewidth2.getText().trim()),e.getX(), e.getY(), color));
+					
+					resize=true;
+				}
+				
+				if(circle) {
+					//Same thing as the other shapes just creating a circle at my mouse with a size 0
+					//that will be resized later
+					
+					list.add(new Circle(e.getX(), e.getY(), 0, color));
+					
+					x1=e.getX();
+					y1=e.getY();
+					resize=true;
+				}
+				
+				if(cretext) {
+					
+					//Here I create a new font with the info from my text area from earlier 
+					Font f = new Font("Courier", Font.PLAIN, Integer.parseInt(textSize2.getText().trim()));
+					
+					
+					//then I create a new text shape with this info at my mouse 
+					list.add(new Text(e.getX(), e.getY(), f, textContent2.getText(),  color ));
+	
+					
+				}
+				if(front) {		
+					//for front I basically run through all the shapes that my mouse is at and bring the farthest one
+					//to the end of the list so it'll draw last, thus in front
+					for(int i=0; i<list.size(); i++) {
+						if(list.get(i).isOn(e.getX(), e.getY())) {
+							
+							list.add(list.remove(i));
+							
+							break;
+						}
+						break;
+					}
+				}
+				if(back) {
+					//exact opposite as front I run it through the shapes and 
+					//bring the closest one to the front of the list thus being drawn first 
+					for(int i=list.size()-1; i>=0; i--) {
+						if(list.get(i).isOn(e.getX(), e.getY())) {
+							
+							list.add(0,list.remove(i));
+							
+							break;
+						}
+						break;
+					}
+				}
+				
+				
+				if(delete) {
+					//for delete it checks the front most object and uses the isOn 
+					//from there it just removes it from the list
+					
+					for(int i=list.size()-1; i>=0; i--) {
+						if(list.get(i).isOn(e.getX(), e.getY())) {
+							
+							list.remove(i);
+							
+							break;
+						}
+						
+					}
+				}
+				if(move) { 
+					
+					
+					for(int i=list.size()-1; i>=0; i--) {
+						
+						if(list.get(i).isOn(e.getX(), e.getY())){
+							//Issue #1 IsOn isn't working here, but its working for delete
+							x1 = list.get(i).x-e.getX();
+							y1 = list.get(i).y-e.getY();
+							
+							
+							
+							
+							shapee=i;
+							movee = true;
+							
+							
+							
+							break;
+						}
+					}
+					
+					
+					
+				}
+				
+				
+				window.getContentPane().repaint();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+				//Here You have to make sure resize and move is turned off after dragging 
+				resize=false;
+				movee=false;
+				DUMBCOPY();
+				window.getContentPane().repaint();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+			
+		});
+																										
+		canvas.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if(resize) {
+					//if resize is true just redraw that shape with the current start point and make the end point
+					//where my mouse is 
+					list.get(list.size()-1).resize(x1, y1, e.getX(), e.getY());
+				}
+				
+				if(movee){
+					
+					list.get(shapee).move(x1,y1,e.getX(), e.getY());
+					
+				}
+				window.getContentPane().repaint();
+				
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		
+		
+		window.setVisible(true);
+		canvas.setFocusable(true);
+		
+		//run();
+		
+	}
+	
+//	public void run() {
+//		while(true) {
+//			
+//			window.getContentPane().repaint();
+//			
+//			
+//			
+//			
+//			try {
+//				Thread.sleep(10);
+//			} catch (Exception ex) {}
+//		}
+//	}
+	
+	
+	
+	
+	public void DUMBCOPY() {
+		//this helper method makes a hard copy of my versions of my canvas to be recalled later 
+		ArrayList<Shape> listcopy = new ArrayList<Shape>();
+		
+		
+		
+		for(int i=0; i<list.size(); i++) {
+			listcopy.add(list.get(i).copy());
+		}
+		//undoing a line
+//		System.out.println(list);
+//		System.out.println(listcopy);
+		list2.add(listcopy);
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new GraphicsEditor();
+	}
+
+}
+
+
