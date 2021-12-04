@@ -1,0 +1,151 @@
+// They're just gonna be under eachother for the sake of making my github a little less bunched together
+
+//Line: 
+package GraphicsIntro;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.Line2D;
+
+public class Line extends Shape{
+	private int endx, endy; // endx and endy are used to keep track of the end x and end y(as the name suggests)
+	private double slope, yinter, opslope; //These are just for the isOn method 
+	public Line(int x, int y, int thickness, int endx, int endy, Color c) {
+		
+		super(x, y, thickness, thickness, c);
+		this.endx=endx;
+		this.endy=endy;
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public Shape copy() {
+		// TODO Auto-generated method stub
+		//just returns a new line with the variables i already had
+		return new Line(x,y, width, endx, endy, c);
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+        g2.setStroke(new BasicStroke(width));
+        g2.setColor(c);
+        g2.draw(new Line2D.Double(x, y, endx, endy));
+		
+		
+	}
+
+	@Override
+	public boolean isOn(int mouse_x, int mouse_y) {
+		
+		//for my isOn I used systems of equations 
+		//so here I calculate the slope 
+		slope=(((endy)-(this.y))/((endx)-(this.x)));
+		yinter=slope*-1*x+y;
+		
+		//and then turn it into the negative reciprocal
+		opslope=-1/yinter;
+		
+			
+		//Here I just check all the cases that could be true so this checks if its within the 
+		//the width of the center line going outwards 
+		//and then I have a set of if statements to check the top and bottom inwards 
+		
+		if(x==endx) {
+			if(y>=endy&&Math.abs(mouse_x-x)<=width/2&&mouse_y<=y&& mouse_y>=endy) {
+				return true;
+			}else if(Math.abs(mouse_x-x)<=width/2&&mouse_y>=y&& mouse_y<=endy) {
+				return true;
+			}
+			
+		}
+		
+		if((slope*mouse_x-mouse_y+yinter)/Math.sqrt(slope*slope+1)<=width/2 && mouse_y >= opslope*(mouse_x-x)+y-(int)(width*1.7) && mouse_y <= opslope*(mouse_x-endx)+endy+(int)(width*1.7)){
+			return true;
+		}
+		
+		//(int)(1.7*width)
+		return false;
+		
+	}
+
+	@Override
+	public void resize(int x1, int y1, int x2, int y2) {
+		//just changes the end variables to the updated ones
+		endx=x2;
+		endy=y2;
+		
+	}
+
+}
+
+
+//Text
+
+package GraphicsIntro;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.Font;
+import java.awt.FontMetrics;
+public class Text extends Shape{
+	
+	String message;
+	Font f; 
+	
+	public Text(int x, int y, Font f, String message, Color c) {
+		super(x, y, 5, 5, c);
+		this.message=message;
+		this.f=f;
+		
+
+		
+	}
+	
+
+	@Override
+	public Shape copy() {
+		// TODO Auto-generated method stub
+		return new Text(x, y, f, message, c);
+	}
+
+	@Override
+	public void draw(Graphics g) {
+		
+		g.setColor(c);
+		
+	
+		g.setFont(f);
+		g.drawString(message, x, y);
+		
+	}
+
+	@Override
+	public boolean isOn(int x, int y) {
+		
+		//So basically this creates like a box around the text so then I can simply
+		//detect within the same parameters as a rectangle to see if I'm clicking there
+		FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
+        width = (int)(f.getStringBounds(message, frc).getWidth());
+        height = (int)(f.getStringBounds(message, frc).getHeight());
+		
+		
+		if(x>this.x && x<this.x+width && y>this.y-height && y<this.y) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public void resize(int x1, int y1, int x2, int y2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
