@@ -388,6 +388,8 @@ public class GraphicsEditor {
 		container.add(canvas);
 		
 		//finally adding the container to the window 
+		//and adding a border to my canvas
+		container.setBorder(BorderFactory.createTitledBorder("Graphics Editor"));
 		window.add(container);
 		
 		
