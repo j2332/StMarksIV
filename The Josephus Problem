@@ -1,0 +1,35 @@
+package Challenges;
+
+public class JosephifistKill {
+	
+	
+	public static int JOSE(int n){
+	    if (n == 1) {
+	    	 return 1;
+	    }else
+	      
+	    	//For future james this works cause after the first round we have n-1 people
+	    	//then we have to start at %n+1 to make sure we start from the same point again 
+	        return (JOSE(n - 1) + 1) % n +1;
+	    
+	    	//+1=2 people-1 == 1 person skippped so every 2nd person is killed
+	    //
+	}
+	 
+
+	
+	public static void main(String[] args) {
+		
+		System.out.println("Joe won't die if he starts in position: "+ JOSE(9));
+		
+
+	}
+
+
+
+}
+
+
+
+
+
