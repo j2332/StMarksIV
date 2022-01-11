@@ -1,0 +1,141 @@
+package Projects;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.Scanner;
+
+import javax.swing.AbstractAction;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+
+
+
+
+
+
+public class Bot1 extends Bot {
+	private boolean right, forward, left, back, paused=true, moveornot=false;
+	private int count=0, count2, count3;
+	private Scanner input = new Scanner(System.in);
+	JFrame frame;
+	public void draw(Graphics g) {
+		
+		g.setColor(Color.YELLOW);
+		g.fillRect(0, 0, 100, 100);
+	}
+	
+	public Bot1(MazeRunner mr, Color c) {
+		super(mr, c);
+		
+		frame = new JFrame();
+		frame.setSize(100, 100);
+		frame.setResizable(false);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {draw(g);}
+		};
+		canvas.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false), "Left");
+		canvas.getActionMap().put("Left", new LeftAction());
+		
+		canvas.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), " ");
+		canvas.getActionMap().put(" ", new SpaceAction());
+		canvas.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false), "Right");
+		canvas.getActionMap().put("Right", new RightAction());
+		canvas.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0, false), "Pause");
+		canvas.getActionMap().put("Pause", new PauseAction());
+		
+		
+		frame.add(canvas);
+		frame.setVisible(true);
+		
+		
+	}
+	
+	private class RightAction extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
+			right=true;
+			move();
+		}
+	}
+	private class LeftAction extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
+			left=true;
+			move();
+		}
+	}
+	private class SpaceAction extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
+			forward=true;
+			move();
+			
+		}
+
+	}
+	
+	private class PauseAction extends AbstractAction {
+		public void actionPerformed(ActionEvent e) {
+			paused = !paused;
+		}
+	}
+	
+	public void checker() {
+		while (true) {
+			if (!paused) {
+				frame.getContentPane().repaint();
+//				if(moveornot) {
+//					move();
+//				}
+				
+				
+						
+				
+				
+				
+			}
+			try {Thread.sleep(20);} 
+			catch (InterruptedException e) {}
+		}
+	}
+	//@Override
+	public void move() {
+//		System.out.println("WHATCHA WANNA DO");
+//		String answer = input.next();
+		count3++;
+		
+		
+		if(forward) {
+			count2++;
+			moveForward();
+			forward=false;
+			moveornot=false;
+		}
+		if(left) {
+			count2++;
+			turnLeft();
+			left=false;
+			moveornot=false;
+		}
+		if(right) {
+			count2++;
+			if(count==3) {
+				count=0;
+				right=false;
+				moveornot=false;
+			}else {
+				turnLeft();
+				count++;
+				move();
+			}
+		}
+		
+		
+		System.out.println(count2);
+		System.out.println(count3);
+	
+	}
+	
+
+}
