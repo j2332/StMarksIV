@@ -1,0 +1,183 @@
+package Graph;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import Graph.Graph.Vertex;
+
+public class KevinBaconStuff {
+	
+	private Graph<String> g=new Graph<String>();
+	private HashMap<String, String> actors = new HashMap();
+	private HashMap<String, String> movies = new HashMap();
+	private ArrayList<String> actorid = new ArrayList();
+	private ArrayList<String> movieid = new ArrayList();
+	
+	
+	private HashMap<String, ArrayList <String>> connect = new HashMap();
+	private ArrayList<String> movieid2 = new ArrayList();
+	
+	
+	public KevinBaconStuff() throws IOException {
+		readActors();
+		genVer();
+		readMovies();
+		readBoth();
+		connectVer();
+		
+	}
+	
+	
+	public void readActors() throws IOException {
+		
+			
+		BufferedReader reader = new BufferedReader(new FileReader("actors.txt"));
+		
+		
+		String line;
+	    
+		
+		 
+	    while ((line = reader.readLine()) != null) {
+	    	String [] w= line.split("~");
+	    	
+	    	actors.put(w[0], w[1]);
+	        actorid.add(w[0]);
+	        
+	    }
+	    
+	    //System.out.println(actors);
+		reader.close();
+		
+		
+		
+	}
+	
+	public void genVer() {
+		
+		for(int i=0; i<actors.size(); i++) {
+			g.addVertex(actors.get(actorid.get(i)));
+			
+			
+			
+		}
+		
+		//System.out.println(g.toString());
+	}
+	
+	
+	public void readMovies() throws IOException {
+		
+		
+		BufferedReader reader = new BufferedReader(new FileReader("movies.txt"));
+		
+		
+		String line;
+	    
+		
+		 
+	    while ((line = reader.readLine()) != null) {
+	    	String [] w= line.split("~");
+	    	
+	    	movies.put(w[0], w[1]);
+	        movieid.add(w[0]);
+	        
+	    }
+	    
+//	    System.out.println(movies);
+//	    System.out.println(movieid);
+		reader.close();
+		
+	}
+	
+	public void readBoth() throws IOException {
+		
+		
+		BufferedReader reader = new BufferedReader(new FileReader("movie-actors.txt"));
+		
+		String line;
+		
+		int x=1; 
+	    while ((line = reader.readLine()) != null) {
+	    	String [] w= line.split("~");
+	    	
+	    	if(movieid2.size()==0){
+	    		movieid2.add(w[0]);
+	    	}else if(!w[0].equals(movieid2.get(movieid2.size()-1))){
+	    		movieid2.add(w[0]);
+	    	}
+	    	
+	    	
+	        
+	    }
+	    
+	    for(int i=0; i<movieid2.size(); i++) {
+	    	connect.put(movieid2.get(i), null);
+	    	
+	    	
+	    }
+	    
+	    System.out.println(movieid2.size());
+	    
+//	    System.out.println(" ");
+//	    
+//	    System.out.println(connect);
+	    
+	    
+		reader.close();
+		
+	}
+
+	
+	public void connectVer() throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new FileReader("movie-actors.txt"));
+		
+		String line = "";
+		String oldLine = "";
+		ArrayList<String> ids = new ArrayList();
+		
+		int count=0;
+		
+		while ((line = reader.readLine()) != null) {
+			String[] w= line.split("~");
+			
+			if(movieid2.get(count).equals(w[0])) {
+				
+	    		ids.add(w[1]);
+	    		//needs to access connect 
+	    		
+	    		
+	    	}else {
+	    		connect.put(movieid2.get(count), new ArrayList());
+	    		
+	    		ids.clear();
+	    		
+	    		count++;
+	    	}
+			
+	        
+	    }
+		
+		
+		
+	    
+	    System.out.println(connect);
+		
+		
+		
+	}
+	
+	
+	
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		new KevinBaconStuff();
+	}
+
+}
