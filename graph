@@ -1,0 +1,331 @@
+package Graph;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+//ToString
+//Size
+//Remove
+
+
+
+public class Graph<E, T> {
+	private HashMap <E, Vertex> map;
+	
+	class Vertex {
+		E info;
+		HashSet<Edge> neighbors = new HashSet();
+		
+		public Vertex(E info) {
+			this.info=info;
+		}
+		
+		
+	}
+	
+	class Edge{
+		Vertex v1, v2;
+		T info;
+		
+		public Edge(Vertex v1, Vertex v2, T info) {
+			this.v1 = v1;
+			this.v2 = v2;
+			this.info = info;
+		}
+		
+		
+		
+		public Vertex getOtherVertex(Vertex v) {
+			//gets the other vertex
+			if(v == v1) {
+				return v2;
+			}else {
+				return v1;
+			}
+		}
+		
+	}
+	
+	public Graph() {
+		//builds graph
+		map = new HashMap<E, Vertex>();
+		
+	}
+	
+	public void addVertex(E info) {
+		//makes sures it's not already not in the map
+		if(map.get(info)!=null) {
+			
+		}
+		map.put(info, new Vertex(info));
+		//add to map 
+		
+	}
+	
+	public void removeVertex(E info) {
+		//goes through the neighbors of the vertex you want to remove
+		for(Edge s : map.get(info).neighbors) {
+			//severes the relationships 
+			s.getOtherVertex( map.get(info)).neighbors.remove(s);
+		}
+		//finally removing the info
+		map.remove(info);
+	}
+	
+	public int size() {
+		//returns size
+		return map.size();
+	}
+	
+	public String toString() {
+		//just a simple toString
+		String s = "";
+		
+		for(E z: map.keySet()) {
+			
+			
+			
+			s+= z 
+					//+ ":"
+					;
+			s+= "\n";
+	
+			
+			for(Edge x: map.get(z).neighbors){
+				s+= x.info+" ";
+			}
+			s=s.substring(0, s.length()-1);
+			s+="\n";
+		}
+		
+		
+		return s;
+	}
+		
+	public void connect(E a, E b, T edge) {
+		//sets the values to vertexs 
+		Vertex v1 = map.get(a);
+		Vertex v2 = map.get(b);
+		Edge label = new Edge(v1,v2, edge);
+		
+		//makes sures both aren't null 
+		if(map.get(a)==null || map.get(b)==null) {
+			throw (new NullPointerException());
+		}else {
+			
+			//if they aren't then add them to eachothers neighbors list 
+			v1.neighbors.add(label);
+			v2.neighbors.add(label);
+		}
+		
+	}
+	
+	public Vertex getVertex(E info) {
+		return map.get(info);
+		
+	}
+	
+	public ArrayList<E> breadthFirstSearch(E start, E end) {
+		
+		
+//		Vertex begin = getVertex(start);
+//		Vertex finish = getVertex(end);
+		
+		Vertex curr=getVertex(start);
+		//gets the current
+		
+		HashMap<Vertex, Vertex> leadsTo = new HashMap<>();
+		ArrayList<Vertex> toVisit = new ArrayList<>();
+		
+		
+		//Just set up or else the while loop wont run or be able to backtrack to the inital curr
+		leadsTo.put(curr, null);
+		toVisit.add(curr);
+		
+		while(toVisit.size() > 0) {
+			//remove current from visit
+			toVisit.remove(curr);
+			
+			//goes through the neighbors 
+			for(Edge s : curr.neighbors) {
+				
+				//if the other vertex of the edge equals the end
+				if(s.getOtherVertex(curr)==getVertex(end)) {
+					//then sends it to backtrace
+					leadsTo.put(s.getOtherVertex(curr), curr);
+					return backTrace(leadsTo, getVertex(start), getVertex(end));
+				}
+				if(leadsTo.containsKey(s.getOtherVertex(curr))==false) {
+					//else add the neighbors to the toVisit 
+					//adds itself to the leadsTo
+					leadsTo.put(s.getOtherVertex(curr), curr);
+					toVisit.add(s.getOtherVertex(curr));
+					
+				}
+			}
+				
+		}
+		//in case it doesn't work
+		System.out.println("it dont work");
+		return null;
+		
+	}
+	
+	
+	public ArrayList<E> backTrace(HashMap<Vertex,Vertex> leadsTo, Vertex start, Vertex end){
+		
+		ArrayList<E> path= new ArrayList<>();
+		Vertex curr=start;
+		
+		//while there is still a current
+		while(curr!=null) {
+			//just adds the vertexs to the path 
+			path.add(curr.info);
+			//sets the next curr to the next leadsTo
+			curr=leadsTo.get(curr);
+			
+		}
+		
+		
+		
+		return path;
+		
+	}
+	
+	public String BreadthFirstTraverse(E startinfo) { 
+		
+		HashMap<Vertex, Vertex> leadsTo = new HashMap<>(); 
+		Vertex curr=getVertex(startinfo); 
+		ArrayList<Vertex> toVisit = new ArrayList<Vertex>();
+		
+		
+		toVisit.add(curr);
+		leadsTo.put(curr, null);
+		
+		while(toVisit.size()> 0) {
+			
+			curr=toVisit.remove(0); 
+			//goes through the edges
+			for(Edge e: curr.neighbors) { 
+				//very similar to the BFS but just remembers everything it's been 
+				//and sets where it's going 
+				if(!leadsTo.containsKey(e.getOtherVertex(curr))) {
+					
+					toVisit.add(e.getOtherVertex(curr)); 
+					leadsTo.put(e.getOtherVertex(curr), curr); 
+				}
+			}
+		}
+		
+		//returns this string with the actor input and the actor it found 
+		return "The farthest actor from"+startinfo+"is"+curr.info +"\n"+breadthFirstSearch(startinfo,curr.info) ;
+	}
+	
+	
+	public void createFile() throws IOException {
+		
+		FileWriter filer = new FileWriter("graph.txt", false);
+		filer.write(toString());
+		filer.close();
+		
+		//readFile();
+		
+	}
+//	public void readFile() throws IOException {
+//		
+//		BufferedReader reader = new BufferedReader(new FileReader("graph.txt"));
+//		Graph<String> g=new Graph<String>();
+//		
+//		String line;
+//	    
+//		//reads the keys all the vertexs first and then neighbors
+//	    while ((line = reader.readLine()) != null) {
+//	        reader.readLine();
+//	        g.addVertex(line);
+//	       
+//	        
+//	    }
+//	    
+//	    
+//	    String s="";
+//	    Boolean w=false;
+//	    String x="";
+//	    ArrayList<String> list = new ArrayList();
+//	    
+//	    while ((line = reader.readLine()) != null) {
+//	    	if(w==false) {
+//	    		s=line;
+//	    		w=true;
+//	    	}else if(w) {
+//	    		
+//	    		for(int i=0; i<line.length()-1; i++) {
+//	    			if(line.charAt(i)!=' ') {
+//	    				x+=line.charAt(i);
+//	    			}else {
+//	    				g.getVertex(s).neighbors.add(g.getVertex(x));
+//	    				x="";
+//	    			}
+//	    			
+//	    		}
+//	    		w=false;
+//	    		
+//	    		
+//	    		
+//	    	}
+//	       
+//	       
+//	        
+//	    }
+//	    reader.close();
+//		
+//		
+//		
+//		System.out.println(g.toString());
+//	    g.toString();
+//		  
+//		
+//		
+//		
+//		
+//		
+//	}
+	
+//	public static void main(String[]args) throws IOException {
+		
+//		Graph<String> g=new Graph<String>();
+//		
+//		g.addVertex("Tiffany");
+//		g.addVertex("Emma");
+//		g.addVertex("Linda");
+//		g.addVertex("Ryan");
+//		g.addVertex("Diana");
+//		g.addVertex("Jacob");
+//		g.addVertex("Cathy");
+//		
+//		g.connect("Tiffany", "Emma");
+//		g.connect("Tiffany", "Ryan");
+//		g.connect("Tiffany", "Cathy");
+//		g.connect("Emma", "Linda");
+//		g.connect("Emma", "Diana");
+//		g.connect("Diana", "Jacob");
+//		g.connect("Diana", "Linda");
+//		
+//		g.createFile();
+		
+		
+		
+		
+		
+		
+		
+//	}
+	
+	
+	
+}
