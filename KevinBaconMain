@@ -1,0 +1,726 @@
+package Graph;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+
+public class KevinBaconStuff {
+	
+	private Graph<String, String> g=new Graph<>(); //The main graph for code
+	
+	
+	private HashMap<String, String> actors = new HashMap(); //Hashmap of actor ids to names
+	private HashMap<String, String> movies = new HashMap(); //Hashmap of movie ids to names
+	private ArrayList<String> actorid = new ArrayList(); //List of actor ids
+	
+	private HashMap<String, String> actorid2 = new HashMap(); //Hashmap of actor names to ids
+	
+	private ArrayList<String> movieid = new ArrayList(); // List of movie ids
+	
+	private ArrayList<String> actornames = new ArrayList(); //List of actor names
+	
+	//These 3 were for failed neighbor connection
+	private HashMap<String, ArrayList <String>> combine = new HashMap(); 
+	private ArrayList<String> movieid2 = new ArrayList();
+	private ArrayList<String> actorspt2 = new ArrayList<String>();
+	
+	private JTextArea textSize = new JTextArea();
+	
+	//These are all the buttons and texts of the autofill feature 
+	private JTextArea textSize2 = new JTextArea();
+	private JTextArea textContent = new JTextArea();
+	private JTextArea textContent2 = new JTextArea();
+	private JTextArea left1tex = new JTextArea();
+	private JButton left1but = new JButton(" ");
+	
+	private JTextArea right1tex = new JTextArea();
+	private JButton right1but = new JButton(" ");
+	private JTextArea left2tex = new JTextArea();
+	private JButton left2but = new JButton(" ");
+	private JTextArea right2tex = new JTextArea();
+	private JButton right2but = new JButton(" ");
+	
+	private JTextArea left3tex = new JTextArea();
+	private JButton left3but = new JButton(" ");
+	private JTextArea right3tex = new JTextArea();
+	private JButton right3but = new JButton(" ");
+	
+	
+	//auto fill actor name
+	//farthest actor from actor 1 
+	// actors in radius of actor 1 
+	
+	JFrame window = new JFrame(); 
+	private final int height=750, width=750;
+	
+	public KevinBaconStuff() throws IOException {
+		//runs the setup
+		readActors();
+		genVer();
+		readMovies();
+		//readBoth();
+		//connectVer();
+//		System.out.println(movies);
+//		System.out.println(actorid2);
+		conenctWhichOfWHomWOrksPLEASESEEE();
+//		System.out.println(findActor("Ke"));
+		
+		//just setting up a window
+		window.setSize(width, height);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLocationRelativeTo(null);
+		
+		//container set up
+		JPanel container = new JPanel() {};
+		BoxLayout boxlayout = new BoxLayout(container, BoxLayout.Y_AXIS);
+		container.setLayout(boxlayout);
+		
+		
+		//creating border
+		container.setBorder(BorderFactory.createTitledBorder("KevinBaconProject"));
+		
+		//main is the text area which holds the output strings
+		JTextArea main = new JTextArea();
+		main.setEditable(false);
+		main.setBackground(Color.white);
+		
+//		main.setLocation(100, 750);
+//		main.setSize(100, 100);
+		
+		//some smaller containers 
+		JPanel heading1 = new JPanel() {};
+		
+		//These are all smaller containers for autofill
+		JPanel headingfill1 = new JPanel() {};
+		JPanel headingfill2 = new JPanel() {};
+		JPanel headingfill3 = new JPanel() {};
+		JPanel headingfill4 = new JPanel() {};
+		
+		JPanel heading2 = new JPanel() {};
+		
+		
+		//The input for actors 1 and 2
+		textSize.setEditable(false);
+		textSize.setText("Actor 1:");
+		textSize.setBackground(null);
+		
+		textSize2.setEditable(true);
+		textSize2.setText("      J       ");
+		
+		textContent.setEditable(false);
+		textContent.setText("Actor 2:");
+		textContent.setBackground(null);
+		
+		textContent2.setEditable(true);
+		textContent2.setText("      W       ");
+		
+
+		
+		//The job of this button is to find the distance between actors 1 and 2
+		JButton distance = new JButton("Distance");
+		distance.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String> temp;
+				
+				//first checks if both actors are real by seeing if they're in actorid2
+				if(actorid2.get(textSize2.getText().trim()) !=null&&actorid2.get(textContent2.getText().trim())!=null) {
+					//then set the temp List to the result of bfs between the actors 
+					temp= g.breadthFirstSearch(textSize2.getText().trim(), textContent2.getText().trim());
+					//if it's null then sends out that message
+					if(temp==null) {
+						main.setText("Those actors do not connect");
+					}else {
+						//if its true then it'll send out the info 
+						main.setText("The distance from "+textSize2.getText() + " and " + textContent2.getText() + "is: " + temp.size());
+					}
+					
+				}else {
+					//These are edge cases in case there are null values for actors 1, 2, and 1 +2 
+					if(actorid2.get(textSize2.getText().trim()) ==null&&actorid2.get(textContent2.getText().trim())==null) {
+						main.setText("Actor 1 and Actor 2 are not real actors, check your capitalization");
+					}else if(actorid2.get(textSize2.getText().trim()) ==null) {
+						main.setText("Actor 1 is not a real actor, check your capitalization");
+					}else if(actorid2.get(textContent2.getText().trim())==null) {
+						main.setText("Actor 2 is not a real actor, check your capitalization");
+					}
+				}
+				
+//				System.out.println(temp);
+			
+				
+				
+			}
+		});
+		
+		
+		//Job of button is to find the farest actor 
+		JButton far = new JButton("Farthest");
+		far.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				String k="";
+				//Just runs the BFT if the actor is real 
+				if(actorid2.get(textSize2.getText().trim())!=null){
+					main.setText(g.BreadthFirstTraverse(textSize2.getText().trim()));
+				}else {
+					//sends out message incase it's not real 
+					main.setText("That actor is not a real actor, get your capitalization");
+				}
+				
+				
+			}
+		});
+		
+		//all the setup for the autofill 
+		//creats a button and text for each actor 3 times 
+		//set preferred size of button to 25x25
+		left1tex.setEditable(false);
+		left1tex.setText("             ");
+		
+		left1but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textSize2.setText(left1tex.getText().trim());
+				
+				
+			}
+		});
+		
+		left1but.setPreferredSize(new Dimension(25,25));
+		
+		
+		right1tex.setEditable(false);
+		right1tex.setText("             ");
+		
+		right1but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textContent2.setText(right1tex.getText().trim());
+				
+				
+			}
+		});
+		
+		right1but.setPreferredSize(new Dimension(25,25));
+//      ----------------------
+		
+		left2tex.setEditable(false);
+		left2tex.setText("             ");
+		
+		left2but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textSize2.setText(left2tex.getText().trim());
+				
+				
+			}
+		});
+		left2but.setPreferredSize(new Dimension(25,25));
+		
+		right2tex.setEditable(false);
+		right2tex.setText("             ");
+		
+		right2but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textContent2.setText(right2tex.getText().trim());
+				
+				
+			}
+		});
+		right2but.setPreferredSize(new Dimension(25,25));
+//      ----------------------
+		
+		left3tex.setEditable(false);
+		left3tex.setText("             ");
+		
+		left3but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textSize2.setText(left3tex.getText().trim());
+				
+				
+			}
+		});
+		
+		left3but.setPreferredSize(new Dimension(25,25));
+		
+		right3tex.setEditable(false);
+		right3tex.setText("             ");
+		
+		right3but.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				textContent2.setText(right3tex.getText().trim());
+				
+				
+			}
+		});
+		right3but.setPreferredSize(new Dimension(25,25));
+		System.out.println("yo");
+		
+		
+		
+		
+		main.setPreferredSize(new Dimension(100,100));
+		
+		//adds all the texts and buttons into sub containers 
+		heading1.add(textSize);
+		heading1.add(textSize2);
+		heading1.add(textContent);
+		heading1.add(textContent2);
+		
+		headingfill1.add(left1but);
+		headingfill1.add(left1tex);
+		headingfill1.add(right1but);
+		headingfill1.add(right1tex);
+		
+		headingfill2.add(left2but);
+		headingfill2.add(left2tex);
+		headingfill2.add(right2but);
+		headingfill2.add(right2tex);
+		
+		headingfill3.add(left3but);
+		headingfill3.add(left3tex);
+		headingfill3.add(right3but);
+		headingfill3.add(right3tex);
+		
+		heading2.add(distance);
+		heading2.add(far);
+		//adds all sub containers to main container
+		container.add(heading1);
+		container.add(headingfill1);
+		container.add(headingfill2);
+		container.add(headingfill3);
+		container.add(main);
+		container.add(heading2);
+		
+		window.add(container);
+		window.setVisible(true);
+		
+		
+		run();
+		
+	}
+	
+	public void run() {
+		while(true) {
+			
+			//a while method to make sure that the inputs is always fresh 
+			
+			//this is all for the autofill 
+			//first checks if the text file is empty
+			if(!textSize2.getText().trim().equals("")) {
+				//sets temp to the result of find actors which are the top 4 actors with the same starting chars as inputed
+				ArrayList<String> temp= findActor(textSize2.getText().trim());
+				
+				//goes through and sets each of the texts to one of the temp values
+				left1tex.setText(temp.get(0));
+				//if its empty then it will set botht the text and button visabilty to false
+				if(left1tex.getText().trim().equals("")) {
+					left1but.setVisible(false);
+					left1tex.setVisible(false);
+				}else {
+					left1but.setVisible(true);
+					left1tex.setVisible(true);
+				}
+				//rinse and repeat for all the text and buttons 
+				
+				left2tex.setText(temp.get(1));
+				if(left2tex.getText().trim().equals("")) {
+					left2but.setVisible(false);
+					left2tex.setVisible(false);
+				}else {
+					left2but.setVisible(true);
+					left2tex.setVisible(true);
+				}
+				
+				left3tex.setText(temp.get(2));
+				if(left3tex.getText().trim().equals("")) {
+					left3but.setVisible(false);
+					left3tex.setVisible(false);
+				}else {
+					left3but.setVisible(true);
+					left3tex.setVisible(true);
+				}
+				
+			}
+			
+			if(!textContent2.getText().trim().equals("")) {
+				ArrayList<String> temp= findActor(textContent2.getText().trim());
+				//exact same as before but just with the right side
+				right1tex.setText(temp.get(0));
+				if(right1tex.getText().trim().equals("")) {
+					right1but.setVisible(false);
+					right1tex.setVisible(false);
+				}else {
+					right1but.setVisible(true);
+					right1tex.setVisible(true);
+				}
+				
+				right2tex.setText(temp.get(1));
+				if(right2tex.getText().trim().equals("")) {
+					right2but.setVisible(false);
+					right2tex.setVisible(false);
+				}else {
+					right2but.setVisible(true);
+					right2tex.setVisible(true);
+				}
+				
+				right3tex.setText(temp.get(2));
+				if(right3tex.getText().trim().equals("")) {
+					right3but.setVisible(false);
+					right3tex.setVisible(false);
+				}else {
+					right3but.setVisible(true);
+					right3tex.setVisible(true);
+				}
+			}
+			
+			try {
+				Thread.sleep(100);
+			} catch (Exception ex) {}
+		}
+	}
+	
+	
+	public void readActors() throws IOException {
+		
+		//creates a bufferedreader
+		BufferedReader reader = new BufferedReader(new FileReader("actors.txt"));
+		
+		
+		String line;
+	    
+		
+		//just goes line by line
+	    while ((line = reader.readLine()) != null) {
+	    	//splits it 
+	    	String [] w= line.split("~");
+	    	
+	    	//and add to different Hashmaps/lists 
+	    	actors.put(w[0], w[1]);
+	        actorid.add(w[0]);
+	        actorid2.put(w[1], w[0]);
+	        actornames.add(w[1]);
+	        
+	    }
+	    
+//	    System.out.println(actors);
+	    //closes(DUH)
+		reader.close();
+		
+		
+		
+	}
+	
+	public void genVer() {
+		
+		for(int i=0; i<actors.size(); i++) {
+			//adds each of the actors to the graph 
+			g.addVertex(actors.get(actorid.get(i)));
+//			System.out.println(actors.get(actorid.get(i)));
+			
+			
+		}
+		
+		
+		//System.out.println(g.toString());
+	}
+	
+	
+	public void readMovies() throws IOException {
+		
+		//creates a bufferedreader for movies 
+		BufferedReader reader = new BufferedReader(new FileReader("movies.txt"));
+		
+		
+		String line;
+	    
+		
+		 //reads line by line
+	    while ((line = reader.readLine()) != null) {
+	    	//same thing as actors splits line
+	    	String [] w= line.split("~");
+	    	
+	    	//adds to different Hashmaps/Lists
+	    	movies.put(w[0], w[1]);
+	        movieid.add(w[0]);
+	        
+	    }
+	    
+//	    System.out.println(movies);
+//	    System.out.println(movieid);
+		reader.close();
+		
+	}
+	
+	//old file reader for the other idea 
+//	public void readBoth() throws IOException {
+//		
+//		
+//		BufferedReader reader = new BufferedReader(new FileReader("movie-actors.txt"));
+//		
+//		String line;
+//		
+//		int x=1; 
+//	    while ((line = reader.readLine()) != null) {
+//	    	String [] w= line.split("~");
+//	    	
+//	    	if(movieid2.size()==0){
+//	    		movieid2.add(w[0]);
+//	    	}else if(!w[0].equals(movieid2.get(movieid2.size()-1))){
+//	    		movieid2.add(w[0]);
+//	    	}
+//	    	
+//	    	
+//	        
+//	    }
+//	    
+//	    for(int i=0; i<movieid2.size(); i++) {
+//	    	combine.put(movieid2.get(i), null);
+//	    	
+//	    	
+//	    }
+//	    
+////	    System.out.println(movieid2.size());
+//	    
+////	    System.out.println(" ");
+////	    
+////	    System.out.println(connect);
+//	    
+//	    
+//		reader.close();
+//		
+//	}
+	
+	public void conenctWhichOfWHomWOrksPLEASESEEE() throws FileNotFoundException {
+			//creates a scanner and file 
+			File file = new File("movie-actors.txt");
+		    Scanner reader = new Scanner(file);
+		    
+		    
+		    
+		    String[] s = reader.nextLine().split("~");
+		    int curr = Integer.parseInt(s[0]);
+	    
+	    	int count=0; 
+//	    	System.out.println(movies);
+//	    	System.out.println(actors);
+	    	
+	    	//while there is a next line 
+		    while(reader.hasNextLine()) {
+		    	
+		    	//checks if it's the same movie
+		    	if(curr == Integer.parseInt(s[0])) {
+		    		//if it is add to lust 
+		    		actorspt2.add(actors.get(s[1]));
+		    		//then splits the next one
+		    		s = reader.nextLine().split("~");
+		    		
+		    	}else {
+//		    		System.out.println(actors.get(actorspt2.get(0)));
+//		    		System.out.println("yo");
+//		    		System.out.println(actorspt2);
+//		    		System.out.println(actorid2);
+		    		//if not then connect the list together 
+		    		for(int i=0; i<actorspt2.size(); i++) {
+		    	    	for(int j=i; j<actorspt2.size(); j++) {
+		    	    		
+		    	    		
+		    	    		
+		    	    		
+		    	    		g.connect(actorspt2.get(i), actorspt2.get(j), movies.get(curr));
+		    	    	}
+		    	    }
+		    		//then reset the lsit
+		    		//and move onto the next movie
+		    		curr = Integer.parseInt(s[0]);
+		    		
+		    		actorspt2.clear();
+		    	}
+		    }
+		    
+	    	curr = Integer.parseInt(s[0]);
+	    	
+	    	actorspt2.clear();
+		
+		
+		
+		
+	}
+	
+	
+	public ArrayList<String> findActor(String name) {
+//		System.out.println(actornames);
+		//holds the top 4 names
+		ArrayList<String> keevin= new ArrayList<>();
+//		System.out.println(name.length());
+//		String z="Kelly Kilgour";
+//		System.out.println(z.substring(0, name.length()));
+//		System.out.println(z.substring(0, name.length()).equals(name)? "true": "false");
+		
+		//go through all the actor names
+		for(String s: actornames) {
+			//if the size of keevin is 4 then return 
+			if(keevin.size()==4) {
+				return keevin;
+				
+			} 
+			try {
+				//the try is for a name that is shorter than the string that we are trying to get a piece of
+				if(s.substring(0, name.length()).equals(name)) {
+					//if the substring and the name string are equal then add to keevin
+					
+					keevin.add(s);
+				}
+			} catch (Exception ex) {}
+			
+			
+		}
+		
+		//if the size doesn't reach 4 then it fills in the rest of the values as empty 
+		if(keevin.size()<4) {
+			while(keevin.size()<4) {
+				
+				keevin.add("");
+				
+				
+			}
+		}
+		
+		
+		
+		return keevin;
+
+		
+		
+		
+		
+		
+		
+	}
+	//extra method for the other way of connection can be ignored 
+	public void connectVer() throws IOException {
+		
+		BufferedReader reader = new BufferedReader(new FileReader("movie-actors.txt"));
+		
+		String line = "";
+		String oldLine = "";
+		
+		int count=0;
+		
+		combine.put(movieid2.get(count), new ArrayList());
+		
+		while ((line = reader.readLine()) != null) {
+			String[] w= line.split("~");
+			//System.out.println(count);
+			
+			if(movieid2.get(count).equals(w[0])) {
+				
+				
+				combine.get(movieid2.get(count)).add(w[1]);
+				//connect.put(movieid2.get(count).add(w[1]);
+	    		//needs to access connect 
+	    		
+	    		
+	    	}else {
+	    		count++;
+	    		combine.put(movieid2.get(count), new ArrayList());
+	    		
+	    		
+	    	}
+			
+	        
+	    }
+		int you=0; 
+		//System.out.println(combine);
+		String count2=movieid2.get(0);
+		
+		while(movieid2.size()>0) {
+//			System.out.println(combine.get(count2));
+			
+//			System.out.println(movies.get(count2));
+			for(int i=0; i<combine.get(count2).size(); i++) {
+				//System.out.println(you);
+				//System.out.println(combine.get(count2));
+//			if(combine.get(count2).get(0)!=null) {
+				String curr= combine.get(count2).get(0);
+//			}
+				System.out.println(combine.get(count2));
+//				System.out.println(actors.get("983705"));
+				for(int j=1; j<combine.get(count2).size()-1; j++) {
+//					System.out.println(movieid2);
+//					System.out.println("");
+//					System.out.println(combine.get(count2).get(0));
+//					System.out.println(combine.get(count2).get(j));
+					
+					g.connect(curr, combine.get(count2).get(j), movieid2.get(0));
+					
+				}
+				
+//				System.out.println(g.getVertex(curr).neighbors);
+				combine.get(count2).remove(0);
+				
+				you++;
+			}
+			System.out.println("HALTTTTTTTTTt-----------------------------------");
+			
+			combine.remove(count2);
+			movieid2.remove(0);
+			
+			//System.out.println(you);
+			
+			count2=movieid2.get(0);
+		}
+		
+		
+	    
+	   System.out.println(combine);
+	  
+		
+		
+	}
+	
+	
+	
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		new KevinBaconStuff();
+	}
+
+}
