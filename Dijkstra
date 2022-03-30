@@ -242,3 +242,81 @@ public class Graph2<E> {
 	
 	
 }
+
+
+
+--
+
+package DijkstraThing;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
+import Projects.PQ.Node;
+
+public class PQ2<E> {
+
+	ArrayList<Node> list = new ArrayList<Node>();
+	
+	public class Node{
+		
+		int prior; 
+		E info;
+		
+		public Node(E info, int prior) {
+			this.info =info;
+			this.prior=prior;
+		}
+		
+		
+		public int getPrior() {
+			return prior;
+		}
+		
+	}
+	public int getFirstPrior() {
+		return list.get(0).prior;
+	}
+	
+	public int size() {
+		return list.size();
+	}
+	
+	
+	public void put(E e, int prior) {
+		if(list.contains(e)) {
+			list.remove(e);
+			
+		}
+		
+		list.add(new Node(e, prior));
+		list.sort(Comparator.comparingInt(Node::getPrior));
+		
+		
+	}
+	
+	public E pop() {
+		return list.remove(0).info;
+	}
+	
+	public String toString() {
+		String yo="";
+		for(Node n: list) {
+			yo+= "(" + n.info.toString() + ", " + n.prior + ")";
+		}
+		
+		return yo;
+		
+	}
+
+	
+	
+	
+	
+	
+	
+}
+
+
+
+
