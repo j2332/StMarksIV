@@ -1,0 +1,244 @@
+package DijkstraThing;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import Graph.Graph.Edge;
+import Graph.Graph.Vertex;
+
+
+
+public class Graph2<E> {
+	
+	
+	private HashMap <E, Vertex> map;
+	
+	class Vertex {
+		E info;
+		HashSet<Edge> neighbors = new HashSet();
+		
+		public Vertex(E info) {
+			this.info=info;
+		}
+		
+		
+	}
+	
+	class Edge{
+		Vertex v1, v2;
+		int distance;
+		
+		
+		public Edge(Vertex v1, Vertex v2, int info) {
+			this.v1 = v1;
+			this.v2 = v2;
+			distance = info;
+		}
+		
+		
+		
+		public Vertex getOtherVertex(Vertex v) {
+			//gets the other vertex
+			if(v == v1) {
+				return v2;
+			}else {
+				return v1;
+			}
+		}
+		
+		public int getDistance() { 
+			return distance;
+		}
+		
+	}
+	
+	public Graph2() {
+		//builds graph
+		map = new HashMap<E, Vertex>();
+		
+	}
+	
+	public void addVertex(E info) {
+		//makes sures it's not already not in the map
+		if(map.get(info)!=null) {
+			
+		}
+		map.put(info, new Vertex(info));
+		//add to map 
+		
+	}
+	
+	public void removeVertex(E info) {
+		//goes through the neighbors of the vertex you want to remove
+		for(Edge s : map.get(info).neighbors) {
+			//severes the relationships 
+			s.getOtherVertex( map.get(info)).neighbors.remove(s);
+		}
+		//finally removing the info
+		map.remove(info);
+	}
+	
+	public int size() {
+		//returns size
+		return map.size();
+	}
+	
+//	public String toString() {
+//		//just a simple toString
+//		String s = "";
+//		
+//		for(E z: map.keySet()) {
+//			
+//			
+//			
+//			s+= z 
+//					//+ ":"
+//					;
+//			s+= "\n";
+//	
+//			
+//			for(Edge x: map.get(z).neighbors){
+//				s+= x.info+" ";
+//			}
+//			s=s.substring(0, s.length()-1);
+//			s+="\n";
+//		}
+//		
+//		
+//		return s;
+//	}
+		
+	public void connect(E a, E b, int edge) {
+		//sets the values to vertexs 
+		Vertex v1 = map.get(a);
+		Vertex v2 = map.get(b);
+		Edge label = new Edge(v1,v2, edge);
+		
+		//makes sures both aren't null 
+		if(map.get(a)==null || map.get(b)==null) {
+			throw (new NullPointerException());
+		}else {
+			
+			//if they aren't then add them to eachothers neighbors list 
+			v1.neighbors.add(label);
+			v2.neighbors.add(label);
+		}
+		
+	}
+	
+	public Vertex getVertex(E info) {
+		return map.get(info);
+		
+	}
+	
+	
+	
+	public ArrayList<E> Dijkstra(E start, E end){
+		
+		Vertex curr= getVertex(start);
+		
+		
+		PQ2<Vertex> toVisit = new PQ2(); 
+		
+		HashMap<Vertex, Boolean> visited = new HashMap();
+		HashMap<Vertex, Edge> leadsTo = new HashMap<>();
+		HashMap<Vertex, Integer> distance = new HashMap<>();
+		
+		//sets false to every visited vertex
+		//sets the distance from the original point to infinite for every vertex
+		for(E key: map.keySet()) {
+            distance.put(map.get(key), Integer.MAX_VALUE);  
+            visited.put(map.get(key),false); 
+        }
+		
+		toVisit.put(getVertex(start), 0); //whats the first p?
+		distance.put(getVertex(start), 0);
+		
+		while(toVisit.size()>0) {
+			
+			curr=toVisit.pop();
+			
+			if(curr==getVertex(end)) {
+				return backTrace(leadsTo, curr, curr);//fix this later
+			}else {
+				
+				for(Edge nei : curr.neighbors) {
+					Vertex active= nei.getOtherVertex(curr);
+					
+					
+					
+					if(!visited.get(active)) {
+						int temp= distance.get(curr) + (int)nei.distance;
+						
+						if(temp<distance.get(active)) {
+							
+							
+							distance.put(active, temp);
+							toVisit.put(active, temp);
+							leadsTo.put(active, nei);	
+						}	
+					}	
+				}	
+			}
+		}
+		
+		
+		
+			
+	}
+	
+	
+	
+	public ArrayList<E> backTrace(HashMap<Vertex,Edge> leadsTo, Vertex start, Vertex end){
+		//THIS IS A MESS
+		ArrayList<E> path= new ArrayList<>();
+		Vertex curr=end;
+		
+		
+		while(curr!=null) {
+			Edge temp;
+			for(Edge e : curr.neighbors) {
+				if(leadsTo.get(e.getOtherVertex(curr))== leadsTo.get(curr)) {
+					temp=e;
+					path.add(curr.info);
+				}
+			}
+			
+
+			curr=temp.getOtherVertex(curr);
+			
+		}
+		
+		
+		
+		return path;
+		
+	}
+	
+	public static void main(String[] args) {
+		
+		Graph2<String> g = new Graph2<String>();
+		
+		g.addVertex("Joe");
+		g.addVertex("Derek");
+		g.addVertex("Sam");
+		
+		g.addVertex("Table");
+		g.addVertex("Mushroom");
+		
+		
+		g.connect("Joe", "Table", 3);
+		g.connect("Table", "Mushroom", 10);
+		g.connect("Joe", "Derek", 5);
+		g.connect("Derek", "Sam", 2);
+		g.connect("Sam", "Mushroom", 1);
+		System.out.println(g.Dijkstra("Joe", "Mushroom"));
+		
+	}
+	
+	
+	
+	
+	
+}
