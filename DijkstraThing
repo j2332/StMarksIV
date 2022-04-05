@@ -1,0 +1,256 @@
+package DijkstraThing;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import DijkstraThing.Graph2.Edge;
+import GraphicsIntro.Circle;
+import GraphicsIntro.GraphicsEditor;
+import GraphicsIntro.Shape;
+import Projects.BufferedBitWriter;
+
+public class GPS {
+
+	
+	
+	class cabbage extends Shape{
+		
+		String s;
+		
+		public cabbage(int startx, int starty,int diameter,  Color c, String s) {
+			super(startx, starty, diameter, diameter, c);
+			this.s=s;
+			
+			
+		}
+		
+		public void draw(Graphics g) {
+		
+			g.setColor(c);
+			g.fillOval(x-this.width/2, y-this.width/2, width, width);
+		}	
+
+		public String getString() {
+			return s;
+		}
+		public Integer getTheX() {
+			return x;
+		}
+		public Integer getTheY() {
+			return y;
+		}
+		@Override
+		public Shape copy() {
+			// TODO Auto-generated method stub
+			return new Circle(x, y, width, c);
+		}
+
+		@Override
+		public boolean isOn(int x, int y) {
+			
+			//Pretty simple just uses the distance formula to make sure where I'm clicking
+			//is withing the width from the center of the circle 
+			if(Math.sqrt( (Math.pow(x-this.x,2 ))+(Math.pow(y-this.y, 2)) )<=width/2) {
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void resize(int x1, int y1, int x2, int y2) {
+			//just sets the width to  the amount I'm dragging 
+			width=(int) Math.sqrt( (Math.pow(x2-x1,2 ))+(Math.pow(y2-y1, 2)) );
+			
+		}
+	}
+	
+	
+	
+	public final int Height=800, Width=900;
+	private int x=Width/2, y=Height/2;
+	JFrame window = new JFrame(); 
+	private BufferedImage bowlingball;
+	
+	private ArrayList<cabbage> nodes = new ArrayList<>();
+	
+	private HashMap<Circle, String> locations = new HashMap<>();
+	
+	private Graph2 graph = new Graph2();
+	
+	
+	
+	public GPS() {
+		
+		
+		try {
+			bowlingball = ImageIO.read(new File("stopandshop.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		window.setSize(Width, Height);
+
+		
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLocationRelativeTo(null);
+		
+		
+		JPanel container = new JPanel();
+		
+		
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				System.out.println("yo");
+				g.drawImage(bowlingball, 0, 0, Width, Height, null);
+				
+				for(int i=0; i<nodes.size(); i++) {
+					
+					nodes.get(i).draw(g);
+					g.drawString(nodes.get(i).getString(), nodes.get(i).getTheX(), nodes.get(i).getTheY()-10);
+
+				}
+				
+				
+				
+				
+			}
+		};
+
+		
+		
+		
+		
+//		container.add(canvas);
+//		window.add(canvas2);
+		
+		window.add(canvas);
+		
+//		window.add(canvas);
+		
+//		container.add(canvas2);
+//		container.add(canvas);
+//		window.add(container);
+		
+		
+		
+		
+		
+		canvas.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+				String path = JOptionPane.showInputDialog("Name this aisle!");
+				
+				graph.addVertex(path, e.getX(), e.getY());
+				nodes.add(new cabbage(e.getX(), e.getY(), 10, Color.RED, path));
+				
+				
+				
+				
+				
+				
+				try {
+					 
+					FileWriter fw = new FileWriter("GPStext", false);
+					 
+					 for(cabbage c: nodes) {
+						 
+						 System.out.println("test");
+						 fw.write(c.getString() + ": "+graph.getVertex(c.getString()).x + ", "+graph.getVertex(c.getString()).y );
+						 fw.write(System.getProperty( "line.separator" ));
+					 }
+					 
+					 fw.close();
+					 
+					 
+					 
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				
+				
+				
+				window.getContentPane().repaint();
+				
+				
+				
+			}
+				
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		
+		window.setVisible(true);
+		canvas.requestFocus();
+		
+	}
+	
+	public void setUp() throws FileNotFoundException {
+		
+		FileReader in = new FileReader("GPStext");
+		
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		new GPS();
+	}
+	
+	
+}
