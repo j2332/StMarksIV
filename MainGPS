@@ -1,0 +1,222 @@
+package DijkstraThing;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+
+
+public class CGPS {
+	
+	
+	private JFrame window = new JFrame(); 
+	private final int Width=900, Height=800;
+	private ArrayList<Shape> list = new ArrayList<Shape>();
+	private BufferedImage bowlingball;
+	private File blah = new File("testfile.txt");
+	
+	private Boolean where=false;
+//	private Graph2 graph;
+	Graph2 graph = new Graph2();
+	
+	public CGPS(){
+		
+		//for testing
+		
+//		setUp();
+		
+		//--------------------
+		
+		
+		try {
+			graph = new Graph2(blah);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		//just reads my image and creates it into a buffered image 
+		try {
+			bowlingball = ImageIO.read(new File("stopandshop.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		//sets up the frame 
+		window.setSize(Width, Height);
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLocationRelativeTo(null);
+		
+		
+		
+		//my main canvas with all the graphics
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+				
+				g.drawImage(bowlingball, 0, 0, Width, Height, null); //background image 
+				
+				graph.paintIT(g); //uses the graph paint function 
+				
+			}
+		};
+		
+		
+		canvas.addMouseListener(new MouseListener() {
+			
+			
+			String start=null;
+			String end=null;
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				ArrayList<String>all = new ArrayList<>(); //arraylist that holds the vertices that are in the path
+				
+				for(String s : graph.keySet()) { //runs through all the vertices
+					int x=e.getX();
+					int y=e.getY();
+					
+					
+					//checks if the mouse is on the vertex
+					if(x>=graph.getVertex(s).x && x<=graph.getVertex(s).x+15 && y>=graph.getVertex(s).y && y<=graph.getVertex(s).y+15) {
+						
+						//if it is and no point has been selected then make the current vertex the start
+						if(start==null) {
+							start=graph.getVertex(s).info;
+						}else if(end==null) {
+							//if only one point is selected then make the end point the second
+							end=graph.getVertex(s).info;
+							
+							//runs the dijkstra and makes the list all the vertices 
+							all= graph.Dijkstra(start, end);
+							
+							//selects all the vertices in the path as true
+							for(String w : all) {
+								graph.getVertex(w).selectTru();
+								
+							}
+							
+							//finds all the edges between vertices and selects them as true 
+							for(int i=0; i<all.size()-1;i++) {
+								graph.getEdge(graph.getVertex(all.get(i)), graph.getVertex(all.get(i+1))).selectTru();
+							}
+							
+							
+
+							
+							
+							
+						}else {
+							
+							all= graph.Dijkstra(start, end);
+							//sets all the edges in the path as false
+							for(int i=0; i<all.size()-1;i++) {
+								graph.getEdge(graph.getVertex(all.get(i)), graph.getVertex(all.get(i+1))).selectFal();
+							}
+							//sets the selected as the new start while reseting it all
+							start=graph.getVertex(s).info;
+							end=null;
+							
+							//selects all the vertices as false
+							for(String z : graph.keySet()) {
+								graph.getVertex(z).selectFal();
+							}
+							
+							
+						}
+						//selects the one as true
+						graph.getVertex((s)).selectTru();
+						
+						
+						
+						//repaints to refresh
+						window.getContentPane().repaint();
+					}
+					
+					
+
+				}
+				
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+		});
+		
+		window.add(canvas);
+		window.setVisible(true);
+
+		
+		
+	}
+	
+	public void setUp() {
+		
+		//just a test graph 
+		
+		graph.addVertex("jabba", 10, 15);
+		graph.addVertex("luke", 400, 200);
+		graph.addVertex("Another", 700, 400);
+		graph.addVertex("mando", 184, 600);
+		graph.addVertex("Please", 300, 680);
+		graph.connect("Please", "jabba", 13);
+		graph.connect("Please", "luke", 24);
+		graph.connect("jabba", "luke", 10);
+		graph.connect("luke", "mando", 3);
+		graph.connect("mando", "jabba", 3);
+		graph.connect("Another", "luke", 40);
+		graph.connect("Another", "mando", 40);
+		try {
+			graph.save("testfile");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void main(String[]args) {
+		new CGPS();
+	}
+	
+}
