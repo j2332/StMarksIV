@@ -35,17 +35,17 @@ public class CGPS {
 		
 		//for testing
 		
-//		setUp();
+		setUp();
 		
 		//--------------------
 		
 		
-		try {
-			graph = new Graph2(blah);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			graph = new Graph2(blah);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		
@@ -117,6 +117,36 @@ public class CGPS {
 								graph.getVertex(w).selectTru();
 								
 							}
+							
+							//just a frame that pops up to tell you the path
+							JFrame frame = new JFrame(); 
+							frame.setSize(300, 300);
+							frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+							frame.setLocationRelativeTo(null);
+							
+							String s2="";
+							
+							for(String z : all) {
+								s2+= z +" to ";
+							}
+							s2=s2.substring(0, s2.length()-4);
+							
+							final String s3 =s2;
+							JPanel canvas2 = new JPanel() {
+								public void paint(Graphics g) {
+									super.paint(g);
+									
+									g.setColor(Color.BLACK);
+									g.drawString("The path is:" + s3, 20, 20);
+									
+								}
+
+							};
+							frame.add(canvas2);
+							frame.setVisible(true);
+							
+							
+							
 							
 							//finds all the edges between vertices and selects them as true 
 							for(int i=0; i<all.size()-1;i++) {
