@@ -3,6 +3,8 @@ package DijkstraThing;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -13,39 +15,68 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+
+
+
 
 
 
 public class CGPS {
 	
 	
-	private JFrame window = new JFrame(); 
-	private final int Width=900, Height=800;
-	private ArrayList<Shape> list = new ArrayList<Shape>();
-	private BufferedImage bowlingball;
-	private File blah = new File("testfile.txt");
 	
-	private Boolean where=false;
-//	private Graph2 graph;
+	private JFrame mainwindow = new JFrame();
+	private final int Width=900, Height=800;
+	private BufferedImage bowlingball;
+	
+	
+	private JFrame window = new JFrame();
 	Graph2 graph = new Graph2();
 	
-	public CGPS(){
+	
+	
+	
+	
+	
+	private JFrame window2 = new JFrame();
+	Graph2 graph2 = new Graph2();
+	
+	private JFrame window3 = new JFrame();
+	Graph2 graph3 = new Graph2();
+	
+	
+	
+	private File blah = new File("gps.txt");
+	
+	
+	private int count=0;
+	private Boolean where=false;
+//	private Graph2 graph;
+	
+	
+	
+	public CGPS() {}
+	public CGPS(Boolean x){
 		
+
 		//for testing
 		
-		setUp();
+		
 		
 		//--------------------
 		
 		
-//		try {
-//			graph = new Graph2(blah);
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			graph = new Graph2(blah);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		
@@ -220,33 +251,389 @@ public class CGPS {
 		
 	}
 	
-	public void setUp() {
+	//map maker
+	public CGPS(int x){
 		
-		//just a test graph 
-		
-		graph.addVertex("jabba", 10, 15);
-		graph.addVertex("luke", 400, 200);
-		graph.addVertex("Another", 700, 400);
-		graph.addVertex("mando", 184, 600);
-		graph.addVertex("Please", 300, 680);
-		graph.connect("Please", "jabba", 13);
-		graph.connect("Please", "luke", 24);
-		graph.connect("jabba", "luke", 10);
-		graph.connect("luke", "mando", 3);
-		graph.connect("mando", "jabba", 3);
-		graph.connect("Another", "luke", 40);
-		graph.connect("Another", "mando", 40);
+		//this first portion is identical to the part above
 		try {
-			graph.save("testfile");
+			bowlingball = ImageIO.read(new File("stopandshop.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		window.setSize(Width, Height);
+
+		
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLocationRelativeTo(null);
+		
+		
+		JPanel container = new JPanel();
+		
+		
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+
+				g.drawImage(bowlingball, 0, 0, Width, Height, null);
+				
+				
+				graph2.paintIT(g);
+				
+				
+				
+				
+			}
+		};
+		
+		//-------------
+		
+		canvas.addMouseListener(new MouseListener() {
+			String a=null;
+			String b=null;
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+			}
+				
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				Boolean repeat=false;
+				//first checks if a vertex has already been made at that point
+				for(String s : graph2.keySet()) {
+					if(graph2.getVertex(s).isOn(e.getX(), e.getY())) {
+						
+						repeat=true;
+						
+					}
+					
+				}
+				
+				
+				//if it hasn't then ask for the name and make a new vertex
+				if(!repeat) {
+					
+					String path = JOptionPane.showInputDialog("Name this aisle!");
+					
+					graph2.addVertex(path, e.getX(), e.getY());
+					
+					
+				}else {
+
+					//if not the first click remebers the first vertex selected
+					count++;
+					if(count==1) {
+						for(String c : graph2.keySet()) {
+							if(graph2.getVertex(c).isOn(e.getX(), e.getY())){
+								
+								a=c;
+								
+								
+								
+							}
+						}
+					}
+					
+					//then the second clicks remebers the second vertex
+					if(count==2) {
+						for(String d : graph2.keySet()) {
+							if(graph2.getVertex(d).isOn(e.getX(), e.getY())){
+								b=d;
+								
+							}
+						}
+						
+						
+						//then just connect the vertices and calculate distance using distance formula 
+						graph2.connect(a, b,(int) Math.sqrt( (Math.pow(graph2.getVertex(a).x-graph2.getVertex(b).x,2 ))+(Math.pow(graph2.getVertex(a).y-graph2.getVertex(b).y, 2)) ) );
+						count=0;
+						a="";
+						b="";
+					
+				}
+					
+				
+			}
+
+				
+				
+				
+				try {
+					graph2.save("gps");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				window.getContentPane().repaint();
+				
+				
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+//				resize=false;
+//				window.getContentPane().repaint();
+				
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		
+		
+		
+		
+		
+		window.add(canvas);
+		window.setVisible(true);
+		
+	}
+	
+	//exact same as map maker, but graph already has values in it 
+	public CGPS(double x){
+
+		try {
+			graph2 = new Graph2(blah);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		try {
+			bowlingball = ImageIO.read(new File("stopandshop.png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		window.setSize(Width, Height);
+
+		
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setLocationRelativeTo(null);
+		
+		
+		JPanel container = new JPanel();
+		
+		
+		JPanel canvas = new JPanel() {
+			public void paint(Graphics g) {
+				super.paint(g);
+
+				g.drawImage(bowlingball, 0, 0, Width, Height, null);
+				
+				
+				graph2.paintIT(g);
+				
+				
+				
+				
+			}
+		};
+		
+		
+		
+		canvas.addMouseListener(new MouseListener() {
+			String a=null;
+			String b=null;
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+			}
+				
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				Boolean repeat=false;
+				
+				for(String s : graph2.keySet()) {
+					if(graph2.getVertex(s).isOn(e.getX(), e.getY())) {
+						
+						repeat=true;
+						
+					}
+					
+				}
+				
+				
+				
+				if(!repeat) {
+					
+					String path = JOptionPane.showInputDialog("Name this aisle!");
+					
+					graph2.addVertex(path, e.getX(), e.getY());
+					
+					
+				}else {
+
+					
+					count++;
+					if(count==1) {
+						for(String c : graph2.keySet()) {
+							if(graph2.getVertex(c).isOn(e.getX(), e.getY())){
+								
+								a=c;
+								
+								
+								
+							}
+						}
+					}
+					
+					
+					if(count==2) {
+						for(String d : graph2.keySet()) {
+							if(graph2.getVertex(d).isOn(e.getX(), e.getY())){
+								b=d;
+								
+							}
+						}
+						
+						
+						
+						graph2.connect(a, b,(int) Math.sqrt( (Math.pow(graph2.getVertex(a).x-graph2.getVertex(b).x,2 ))+(Math.pow(graph2.getVertex(a).y-graph2.getVertex(b).y, 2)) ) );
+						count=0;
+						a="";
+						b="";
+					
+				}
+					
+				
+			}
+
+				
+				
+				
+				try {
+					graph2.save("gps");
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				window.getContentPane().repaint();
+				
+				
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+//				resize=false;
+//				window.getContentPane().repaint();
+				
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		
+		
+		
+		
+		
+		window.add(canvas);
+		window.setVisible(true);
+		
+	}
+	public void setUp() {
+		
+		//creates a small frame 
+		mainwindow.setSize(300, 300);
+		mainwindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainwindow.setLocationRelativeTo(null);
+		
+		
+		//three different buttons for three different functions
+
+		JPanel canvas2 = new JPanel() {};
+		
+		//first creates a brand new map/file
+		JButton mapmaker = new JButton("Make new map");
+		mapmaker.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				new CGPS(1);
+				mainwindow.setVisible(false);
+				
+			}
+		});
+		//second uses that map/file to find fastest routes
+		JButton distant = new JButton("GPS");
+		distant.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				new CGPS(false);
+				mainwindow.setVisible(false);
+				
+			}
+		});
+		//last one edits the already exsisting map/file
+		JButton edit = new JButton("Edit map");
+		edit.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Just a button when Pressed sets itself to true and every other button to false
+				new CGPS(2.412);
+				mainwindow.setVisible(false);
+				
+			}
+		});
+		
+		//I made three different constructors for this and one constructor with nothing in it so start it off
+		canvas2.add(mapmaker);
+		
+		canvas2.add(distant);
+		canvas2.add(edit);
+		mainwindow.add(canvas2);
+		mainwindow.setVisible(true);
 		
 	}
 	
+	
 	public static void main(String[]args) {
-		new CGPS();
+		CGPS run = new CGPS();
+		run.setUp();
 	}
 	
 }
